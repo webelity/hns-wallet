@@ -1,13 +1,26 @@
-**All notable changes to this project are documented in [releases](https://github.com/kyokan/bob-wallet/releases). This file is kept for legacy purposes.**
+**All notable changes to this project are documented in [releases](https://github.com/webelity/hns-wallet/releases). This file is kept for legacy purposes.**
 
 #  Changelog
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [UNRELEASED]
+
+## [2.1.4] - 2026-06-27
 ### Added
-- Added the ability to perform paid name swaps. Protocol courtesy of Matthew Zipkin
+- Implemented a custom Right-Click Context Menu with inspection and editing tools.
+- Added UI sorting to the Domain Manager (sort by Domain, Expires On, and HNS Paid).
+- Complete branding update using new neon Handshake Wallet logo assets.
+- Added multi-select capability for domain names in the Domain Manager.
+- Added a Renewal Queue modal that executes renewals sequentially after entering the wallet password once.
+- Added localization support for multi-select renewals across English, Spanish, French, Catalan, and Chinese.
+- Created ATTRIBUTION.md to properly credit original authors and protocol developers.
+- Added a Commercial and Proprietary License Exception for all 2026+ contributions while preserving the original GPLv3 license for existing code.
+- Updated README.md and BUILD.md for Handshake Wallet rebranding.
+
+## [UNRELEASED]
+2020-09-04
+ Added the ability to perform paid name swaps. Protocol courtesy of Matthew Zipkin
 
 ## [0.5.0] - 2020-09-04
 ### Fixed
