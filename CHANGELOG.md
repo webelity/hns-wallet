@@ -12,10 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a transaction fee estimation summary block in the Renewal Queue showing the estimated HNS fee, calculated dynamically using the selected speed's fee rate and a corrected size formula (`250` bytes base + `250` bytes per renewal to account for 1 input and 1 output per domain). It also includes an educational note explaining Handshake's no-annual-registry-fee model.
 - Added a fee speed selector (Slow, Medium, Fast) in the Renewal Queue, defaulting to Slow to optimize fee costs for non-urgent renewals, and mapping the selections to the Redux `fees` state.
 - Implemented pre-filtering of domain renewal queue items in the wallet service (`renewMany`) to exclude domains in non-renewable states (whose covenant type is not `REGISTER`, `UPDATE`, `RENEW`, or `FINALIZE`—such as those locked in a Shakedex `TRANSFER` state). Non-renewable names are returned as failures with a specific error message (`Name is in a non-renewable state (TRANSFER).`), allowing all other valid renewals in the batch to proceed and succeed instead of causing whole-batch failures.
+- Added a "DNS Update Speed" setting to the **Settings -> General** page, allowing users to choose the default transaction speed/fee rate (Slow, Normal, Fast) for updating DNS records.
+- Added a dynamic fee estimation display under the DNS Update Speed setting, displaying both the HNS/KB fee rate and the estimated cost in HNS for a typical DNS update transaction (0.5 KB).
+- Added Spanish, French, Chinese, Catalan, and placeholder translations for the new DNS Update Speed setting.
 
 ### Changed
 - Increased the domain renewal queue batch size limit from 100 to `consensus.MAX_BLOCK_RENEWALS` (600) to allow batching up to 600 names at a time, aligning with the Handshake consensus limit, with an automatic fallback to individual renewals (`createrenewal`) if a batch fails.
 - Corrected the renewal transaction fee estimation formula to account for one input and one output per domain (approx. 250 bytes per name) plus a base transaction size of 250 bytes.
+- Updated `sendUpdate` in the background wallet service and names Redux duck to accept the user-configured `feeRate` and set it via `settxfee` before executing the `createupdate` RPC, enabling custom transaction fee rates to be applied to DNS record updates.
 
 ### Fixed
 - Fixed a parameter forwarding bug in the Renewal Queue's Redux mapping where the custom `feeRate` was ignored during dispatch, resulting in the wallet falling back to default high fee rates. The `renewMany` action now correctly forwards `feeRate` to the background wallet service, which converts it to base units and passes it as the `rate` option in the `createbatch` RPC call.

@@ -666,8 +666,13 @@ class WalletService {
     () => this._executeRPC('createupdate', [name, {records: []}]),
   );
 
-  sendUpdate = (name, json) => this._walletProxy(
-    () => this._executeRPC('createupdate', [name, json]),
+  sendUpdate = (name, json, feeRate) => this._walletProxy(
+    async () => {
+      if (feeRate) {
+        await this._executeRPC('settxfee', [Number(feeRate)]);
+      }
+      return this._executeRPC('createupdate', [name, json]);
+    },
   );
 
   sendReveal = (name) => this._walletProxy(

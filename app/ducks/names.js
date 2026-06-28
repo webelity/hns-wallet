@@ -446,12 +446,17 @@ export const revokeName = (name) => async (dispatch) => {
   return await walletClient.revokeName(name);
 };
 
-export const sendUpdate = (name, json) => async (dispatch) => {
+export const sendUpdate = (name, json) => async (dispatch, getState) => {
+  const state = getState();
+  const { dnsFeeSpeed, fees } = state.node;
+  const feeRate = (fees && fees[dnsFeeSpeed]) || (dnsFeeSpeed === 'slow' ? 0.01 : dnsFeeSpeed === 'standard' ? 0.05 : 0.10);
+
   await new Promise((resolve, reject) => {
     dispatch(getPassphrase(resolve, reject));
   });
+
   await namesDb.storeName(name);
-  const res = await walletClient.sendUpdate(name, json);
+  const res = await walletClient.sendUpdate(name, json, feeRate);
   await dispatch(fetchPendingTransactions());
   return res;
 };

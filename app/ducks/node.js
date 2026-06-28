@@ -22,6 +22,7 @@ import {
   SET_EXPLORER,
   UPDATE_HNS_PRICE,
   SET_NO_DNS, SET_SPV_MODE,
+  SET_DNS_FEE_SPEED,
 } from './nodeReducer';
 import { VALID_NETWORKS } from '../constants/networks';
 
@@ -85,6 +86,12 @@ export const start = (network) => async (dispatch) => {
     dispatch({
       type: SET_SPV_MODE,
       payload: spv,
+    });
+
+    const dnsFeeSpeed = await settingClient.getDnsFeeSpeed();
+    dispatch({
+      type: SET_DNS_FEE_SPEED,
+      payload: dnsFeeSpeed || 'standard',
     });
 
     dispatch(getWatching(network));
@@ -160,4 +167,12 @@ export const setNoDns = (noDns) => async (dispatch) => {
   })
   await dispatch(stop());
   await dispatch(start());
+};
+
+export const setDnsFeeSpeed = (speed) => async (dispatch) => {
+  await settingClient.setDnsFeeSpeed(speed);
+  dispatch({
+    type: SET_DNS_FEE_SPEED,
+    payload: speed,
+  });
 };

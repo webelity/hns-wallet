@@ -56,6 +56,8 @@ const connClient = cClientStub(() => require('electron').ipcRenderer);
     rsPort: state.node.rsPort,
     nsPort: state.node.nsPort,
     noDns: state.node.noDns,
+    dnsFeeSpeed: state.node.dnsFeeSpeed,
+    fees: state.node.fees,
     walletApiKey: state.wallet.apiKey,
     walletSync: state.wallet.walletSync,
     walletInitialized: state.wallet.initialized,
@@ -81,6 +83,7 @@ const connClient = cClientStub(() => require('electron').ipcRenderer);
     fetchWallet: () => dispatch(walletActions.fetchWallet()),
     setLocale: (locale) => dispatch(setLocale(locale)),
     setCustomLocale: (locale) => dispatch(setCustomLocale(locale)),
+    setDnsFeeSpeed: (speed) => dispatch(nodeActions.setDnsFeeSpeed(speed)),
   }),
 )
 export default class Settings extends Component {
@@ -112,6 +115,9 @@ export default class Settings extends Component {
     setCustomRPCStatus: PropTypes.func.isRequired,
     transactions: PropTypes.object.isRequired,
     fetchWallet: PropTypes.func.isRequired,
+    dnsFeeSpeed: PropTypes.string.isRequired,
+    fees: PropTypes.object.isRequired,
+    setDnsFeeSpeed: PropTypes.func.isRequired,
   };
 
   static contextType = I18nContext;
@@ -437,6 +443,36 @@ export default class Settings extends Component {
     await this.props.fetchWallet();
   }
 
+  onSetDnsFeeSpeed = (speed) => {
+    this.props.setDnsFeeSpeed(speed);
+  };
+
+  renderDnsFeeEstimates() {
+    const { fees } = this.props;
+    const { t } = this.context;
+    if (!fees) return null;
+    const slowRate = parseFloat(fees.slow) || 0.01;
+    const normalRate = parseFloat(fees.standard) || 0.05;
+    const fastRate = parseFloat(fees.fast) || 0.10;
+
+    // Typical DNS update TX size is about 0.5 KB
+    const estSize = 0.5;
+
+    return (
+      <div className="dns-fee-speed-estimates">
+        <div className="dns-fee-speed-estimates__item">
+          <strong>{t('slow') || 'Slow'}:</strong> {slowRate.toFixed(6)} HNS/KB ({t('approx') || 'approx.'} {(slowRate * estSize).toFixed(5)} HNS {t('perUpdate') || 'per update'})
+        </div>
+        <div className="dns-fee-speed-estimates__item">
+          <strong>{t('normal') || 'Normal'}:</strong> {normalRate.toFixed(6)} HNS/KB ({t('approx') || 'approx.'} {(normalRate * estSize).toFixed(5)} HNS {t('perUpdate') || 'per update'})
+        </div>
+        <div className="dns-fee-speed-estimates__item">
+          <strong>{t('fast') || 'Fast'}:</strong> {fastRate.toFixed(6)} HNS/KB ({t('approx') || 'approx.'} {(fastRate * estSize).toFixed(5)} HNS {t('perUpdate') || 'per update'})
+        </div>
+      </div>
+    );
+  }
+
   renderContent() {
     const {
       isRunning,
@@ -479,6 +515,26 @@ export default class Settings extends Component {
                 </span>,
                 t('update'),
                 () => history.push('/settings/general/max-idle'),
+              )}
+              {this.renderSection(
+                t('settingDnsFeeSpeedTitle') || 'DNS Update Speed',
+                <div>
+                  <div>{t('settingDnsFeeSpeedDesc') || 'Choose the default transaction speed/fee rate for updating DNS records. A slower speed reduces the miner fee but takes longer to confirm.'}</div>
+                  {this.renderDnsFeeEstimates()}
+                </div>,
+                null,
+                null,
+                <Dropdown
+                  className="dns-fee-speed-dropdown"
+                  items={[
+                    { label: t('slow') || 'Slow', value: 'slow' },
+                    { label: t('normal') || 'Normal', value: 'standard' },
+                    { label: t('fast') || 'Fast', value: 'fast' },
+                  ]}
+                  onChange={this.onSetDnsFeeSpeed}
+                  currentIndex={['slow', 'standard', 'fast'].indexOf(this.props.dnsFeeSpeed)}
+                />,
+                false,
               )}
               {this.renderSection(
                 t('settingLanguageTitle'),

@@ -19,6 +19,7 @@ export const SET_NS_PORT = 'node/SET_NS_PORT';
 export const SET_NO_DNS = 'node/SET_NO_DNS';
 export const SET_SPV_MODE = 'node/SET_SPV_MODE';
 export const COMPACTING_TREE = 'node/COMPACTING_TREE';
+export const SET_DNS_FEE_SPEED = 'node/SET_DNS_FEE_SPEED';
 
 export function getInitialState() {
   return {
@@ -35,6 +36,7 @@ export function getInitialState() {
     noDns: false,
     spv: false,
     compactingTree: false,
+    dnsFeeSpeed: 'standard',
     fees: {
       slow: 0,
       medium: 0,
@@ -142,6 +144,11 @@ export default function nodeReducer(state = getInitialState(), action = {}) {
       return {
         ...state,
         compactingTree: action.payload,
+      };
+    case SET_DNS_FEE_SPEED:
+      return {
+        ...state,
+        dnsFeeSpeed: action.payload,
       };
     default:
       return state;

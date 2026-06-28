@@ -4,6 +4,7 @@ import { app } from "electron";
 const EXPLORER = 'setting/explorer';
 const LOCALE = 'setting/locale';
 const CUSTOM_LOCALE = 'setting/customLocale';
+const DNS_FEE_SPEED = 'setting/dnsFeeSpeed';
 
 
 export async function getExplorer() {
@@ -37,6 +38,15 @@ export async function setCustomLocale(json) {
   return await put(CUSTOM_LOCALE, JSON.stringify(json));
 }
 
+export async function getDnsFeeSpeed() {
+  const speed = await get(DNS_FEE_SPEED);
+  return speed || 'standard';
+}
+
+export async function setDnsFeeSpeed(speed) {
+  return await put(DNS_FEE_SPEED, speed);
+}
+
 export async function getLatestRelease() {
   try {
     const releases = await (
@@ -61,6 +71,8 @@ const methods = {
   getCustomLocale,
   setCustomLocale,
   getLatestRelease,
+  getDnsFeeSpeed,
+  setDnsFeeSpeed,
 };
 
 export async function start(server) {
