@@ -165,4 +165,4 @@ See [SECURITY.md](SECURITY.md#reporting-a-vulnerability).
 
 ## License
 
-[GNU](LICENSE)
+[LICENSE](LICENSE)
