@@ -14,7 +14,7 @@ import SPVNode from 'hsd/lib/node/spvnode';
 import plugin from 'hsd/lib/wallet/plugin';
 import { prefixHash } from '../../db/names';
 import { get, put } from '../db/service';
-import {dispatchToMainWindow} from "../../mainWindow";
+import { dispatchToMainWindow } from "../../mainWindow";
 import {
   SET_NODE_API,
   SET_CUSTOM_RPC_STATUS,
@@ -30,7 +30,7 @@ import pkg from '../../../package.json';
 
 const Network = require('hsd/lib/protocol/network');
 
-const MIN_FEE = new BigNumber(0.01);
+const MIN_FEE = new BigNumber(0.001);
 const DEFAULT_BLOCK_TIME = 10 * 60 * 1000;
 const HSD_PREFIX_DIR_KEY = 'hsdPrefixDir';
 const WALLET_API_KEY = 'walletApiKey';
@@ -126,7 +126,7 @@ export class NodeService extends EventEmitter {
   async configurePaths() {
     const dir = await this.getDir();
     if (!fs.existsSync(dir)) {
-      await pify(cb => fs.mkdir(dir, {recursive: true}, cb));
+      await pify(cb => fs.mkdir(dir, { recursive: true }, cb));
     }
   }
 
@@ -315,7 +315,7 @@ export class NodeService extends EventEmitter {
 
   async testCustomRPCClient(walletNetwork) {
     try {
-      if(!walletNetwork)
+      if (!walletNetwork)
         throw new Error('Could not determine wallet network.');
 
       const testClient = await this.createCustomRPCClient();
@@ -409,8 +409,8 @@ export class NodeService extends EventEmitter {
       }
 
       this.height = info.chain.height;
-    } catch (e) {}
-  }, 500, {trailing: true})
+    } catch (e) { }
+  }, 500, { trailing: true })
 
   async generateToAddress(numblocks, address) {
     return this._execRPC('generatetoaddress', [numblocks, address]);
@@ -479,8 +479,8 @@ export class NodeService extends EventEmitter {
     const standardRes = await this._execRPC('estimatesmartfee', [2], true);
     const fastRes = await this._execRPC('estimatesmartfee', [1], true);
     const slow = BigNumber.max(new BigNumber(slowRes.fee), MIN_FEE).toFixed(6);
-    const standard = BigNumber.max(new BigNumber(standardRes.fee), MIN_FEE * 5).toFixed(6);
-    const fast = BigNumber.max(new BigNumber(fastRes.fee), MIN_FEE * 10).toFixed(6);
+    const standard = BigNumber.max(new BigNumber(standardRes.fee), MIN_FEE * 10).toFixed(6);
+    const fast = BigNumber.max(new BigNumber(fastRes.fee), MIN_FEE * 50).toFixed(6);
 
     return {
       slow,
@@ -664,7 +664,7 @@ async function hapiGet(path = '') {
     throw new Error('Bad response (no body).');
 
   if (json.error && res.statusCode >= 400) {
-    const {error} = json;
+    const { error } = json;
     const err = new Error(error.message);
     err.type = String(error.type);
     err.code = error.code;
@@ -692,7 +692,7 @@ async function hapiPost(path = '', body) {
     throw new Error('No body for JSON-RPC response.');
 
   if (json.error) {
-    const {message, code} = json.error;
+    const { message, code } = json.error;
     throw new Error(message);
   }
 

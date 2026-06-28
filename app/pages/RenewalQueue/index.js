@@ -71,7 +71,7 @@ export default class RenewalQueue extends Component {
   estimateRenewalFee = (numNames) => {
     const { fees } = this.props;
     const { feeOption } = this.state;
-    const feeRate = (fees && fees[feeOption]) || (feeOption === 'slow' ? 0.005 : feeOption === 'medium' ? 0.01 : 0.05);
+    const feeRate = (fees && fees[feeOption]) || (feeOption === 'slow' ? 0.001 : feeOption === 'standard' ? 0.01 : 0.05);
 
     // 1 input + 1 output per name ≈ 250 bytes per name
     // Base transaction size ≈ 250 bytes
@@ -132,7 +132,7 @@ export default class RenewalQueue extends Component {
     });
 
     try {
-      const feeRate = (fees && fees[feeOption]) || (feeOption === 'slow' ? 0.005 : feeOption === 'medium' ? 0.01 : 0.05);
+      const feeRate = (fees && fees[feeOption]) || (feeOption === 'slow' ? 0.001 : feeOption === 'standard' ? 0.01 : 0.05);
       const { successfulNames, failedNames } = await this.props.renewMany(namesToRenew, passphrase, feeRate);
       
       const nextErrors = { ...this.state.errors };
@@ -281,7 +281,7 @@ export default class RenewalQueue extends Component {
             <div className="renewal-queue-page__fee-selector">
               <span className="renewal-queue-page__fee-selector-label">{t('feeSpeed') || 'Speed'}:</span>
               <div className="renewal-queue-page__fee-options">
-                {['slow', 'medium', 'fast'].map(option => (
+                {['slow', 'standard', 'fast'].map(option => (
                   <button
                     key={option}
                     type="button"
@@ -290,7 +290,7 @@ export default class RenewalQueue extends Component {
                     })}
                     onClick={() => this.setState({ feeOption: option })}
                   >
-                    {t(option) || option.charAt(0).toUpperCase() + option.slice(1)}
+                    {option === 'standard' ? (t('normal') || 'Normal') : (t(option) || option.charAt(0).toUpperCase() + option.slice(1))}
                   </button>
                 ))}
               </div>

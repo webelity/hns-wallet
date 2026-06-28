@@ -449,7 +449,7 @@ export const revokeName = (name) => async (dispatch) => {
 export const sendUpdate = (name, json) => async (dispatch, getState) => {
   const state = getState();
   const { dnsFeeSpeed, fees } = state.node;
-  const feeRate = (fees && fees[dnsFeeSpeed]) || (dnsFeeSpeed === 'slow' ? 0.01 : dnsFeeSpeed === 'standard' ? 0.05 : 0.10);
+  const feeRate = (fees && fees[dnsFeeSpeed]) || (dnsFeeSpeed === 'slow' ? 0.001 : dnsFeeSpeed === 'standard' ? 0.01 : 0.05);
 
   await new Promise((resolve, reject) => {
     dispatch(getPassphrase(resolve, reject));

@@ -18,28 +18,28 @@ import ExplorerPicker from '../ExplorerPicker';
 import { clientStub as aClientStub } from '../../background/analytics/client';
 const pkg = require('../../../package.json');
 import c from "classnames";
-import {Redirect} from "react-router";
-import {setCustomRPCStatus} from "../../ducks/node";
+import { Redirect } from "react-router";
+import { setCustomRPCStatus } from "../../ducks/node";
 import CustomRPCConfigModal from "./CustomRPCConfigModal";
-import {fetchWalletAPIKey} from "../../ducks/walletActions";
+import { fetchWalletAPIKey } from "../../ducks/walletActions";
 import Anchor from "../../components/Anchor";
 import walletClient from "../../utils/walletClient";
 import InterstitialWarningModal from "./InterstitialWarningModal";
 import DeepCleanAndRescanModal from "./DeepCleanAndRescanModal";
-import {showError, showSuccess} from "../../ducks/notifications";
+import { showError, showSuccess } from "../../ducks/notifications";
 import BackupListingModal from "./BackupListingModal";
 import fs from "fs";
-const {dialog} = require('@electron/remote');
-import {clientStub as sClientStub} from "../../background/shakedex/client";
+const { dialog } = require('@electron/remote');
+import { clientStub as sClientStub } from "../../background/shakedex/client";
 import ChangeDirectoryModal from "./ChangeDirectoryModal";
 import dbClient from "../../utils/dbClient";
-import {clientStub} from "../../background/node/client";
+import { clientStub } from "../../background/node/client";
 import APIKeyModal from "./APIKeyModal";
-import {clientStub as cClientStub} from "../../background/connections/client";
-import {ConnectionTypes} from "../../background/connections/service";
+import { clientStub as cClientStub } from "../../background/connections/client";
+import { ConnectionTypes } from "../../background/connections/service";
 import Dropdown from "../../components/Dropdown";
-import {I18nContext, langs, languageDropdownItems} from "../../utils/i18n";
-import {setLocale, setCustomLocale} from "../../ducks/app";
+import { I18nContext, langs, languageDropdownItems } from "../../utils/i18n";
+import { setLocale, setCustomLocale } from "../../ducks/app";
 
 const analytics = aClientStub(() => require('electron').ipcRenderer);
 const shakedex = sClientStub(() => require('electron').ipcRenderer);
@@ -145,10 +145,10 @@ export default class Settings extends Component {
 
   onDownload = async () => {
     try {
-      const {network} = this.props;
+      const { network } = this.props;
       const savePath = dialog.showSaveDialogSync({
         defaultPath: `hns-debug-${network}.log`,
-        filters: [{name: 'log file', extensions: ['log']}],
+        filters: [{ name: 'log file', extensions: ['log'] }],
       });
       if (!savePath) return;
       await logger.download(network, savePath);
@@ -175,9 +175,9 @@ export default class Settings extends Component {
   onDownloadExchangeBackup = async () => {
     const listings = await shakedex.getListings();
     const fills = await shakedex.getFulfillments();
-    const data = JSON.stringify({listings, fills});
+    const data = JSON.stringify({ listings, fills });
     const savePath = dialog.showSaveDialogSync({
-      filters: [{name: 'exchange-listing', extensions: ['json']}],
+      filters: [{ name: 'exchange-listing', extensions: ['json'] }],
     });
 
     return new Promise((resolve, reject) => {
@@ -228,7 +228,7 @@ export default class Settings extends Component {
 
     try {
       const buf = await fs.promises.readFile(filepath);
-      const {listings, fills} = JSON.parse(buf);
+      const { listings, fills } = JSON.parse(buf);
 
       for (let listing of listings) {
         await shakedex.restoreOneListing(listing)
@@ -246,7 +246,7 @@ export default class Settings extends Component {
 
   renderNav() {
     const { history, location } = this.props;
-    const {t} = this.context;
+    const { t } = this.context;
 
     return (
       <div className="settings__nav">
@@ -335,7 +335,7 @@ export default class Settings extends Component {
       walletSync,
     } = this.props;
 
-    const {t} = this.context;
+    const { t } = this.context;
 
     return (
       <>
@@ -417,7 +417,7 @@ export default class Settings extends Component {
 
   renderExchange() {
     const { history } = this.props;
-    const {t} = this.context;
+    const { t } = this.context;
     return (
       <>
         {this.renderSection(
@@ -451,9 +451,9 @@ export default class Settings extends Component {
     const { fees } = this.props;
     const { t } = this.context;
     if (!fees) return null;
-    const slowRate = parseFloat(fees.slow) || 0.01;
-    const normalRate = parseFloat(fees.standard) || 0.05;
-    const fastRate = parseFloat(fees.fast) || 0.10;
+    const slowRate = parseFloat(fees.slow) || 0.001;
+    const normalRate = parseFloat(fees.standard) || 0.01;
+    const fastRate = parseFloat(fees.fast) || 0.05;
 
     // Typical DNS update TX size is about 0.5 KB
     const estSize = 0.5;
@@ -487,7 +487,7 @@ export default class Settings extends Component {
       isCustomRPCConnected,
       locale,
     } = this.props;
-    const {t} = this.context;
+    const { t } = this.context;
 
     return (
       <div className="settings__content">
@@ -599,7 +599,7 @@ export default class Settings extends Component {
                   ? <><span className="node-status--inactive" /><span>{t('settingDNSNotRunning')}</span></>
                   : <><span className="node-status--active" /><span>{t('settingDNSRunning', nsPort.toString(), rsPort.toString())}</span></>,
                 noDns ? t('enable') : t('disable'),
-                () => {setNoDns(!noDns)},
+                () => { setNoDns(!noDns) },
                 null,
                 isChangingNodeStatus || isTestingCustomRPC || isCustomRPCConnected,
               )}
@@ -651,8 +651,8 @@ export default class Settings extends Component {
   render() {
     return (
       <ContentArea className="settings" noPadding>
-        { this.renderNav() }
-        { this.renderContent() }
+        {this.renderNav()}
+        {this.renderContent()}
         <Switch>
           <Route path="/settings/general/max-idle" component={MaxIdleModal} />
           <Route path="/settings/wallet/account-index" component={AccountIndexModal} />

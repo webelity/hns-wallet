@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added an additional pagination control at the top of the Domain Manager (below the action buttons and above the search input) by rendering `this.renderControls(namesList)` to improve navigation for users with many domains.
 - Added a transaction fee estimation summary block in the Renewal Queue showing the estimated HNS fee, calculated dynamically using the selected speed's fee rate and a corrected size formula (`250` bytes base + `250` bytes per renewal to account for 1 input and 1 output per domain). It also includes an educational note explaining Handshake's no-annual-registry-fee model.
-- Added a fee speed selector (Slow, Medium, Fast) in the Renewal Queue, defaulting to Slow to optimize fee costs for non-urgent renewals, and mapping the selections to the Redux `fees` state.
+- Added a fee speed selector (Slow, Normal/Standard, Fast) in the Renewal Queue, defaulting to Slow to optimize fee costs for non-urgent renewals, and mapping the selections to the Redux `fees` state.
 - Implemented pre-filtering of domain renewal queue items in the wallet service (`renewMany`) to exclude domains in non-renewable states (whose covenant type is not `REGISTER`, `UPDATE`, `RENEW`, or `FINALIZE`—such as those locked in a Shakedex `TRANSFER` state). Non-renewable names are returned as failures with a specific error message (`Name is in a non-renewable state (TRANSFER).`), allowing all other valid renewals in the batch to proceed and succeed instead of causing whole-batch failures.
 - Added a "DNS Update Speed" setting to the **Settings -> General** page, allowing users to choose the default transaction speed/fee rate (Slow, Normal, Fast) for updating DNS records.
 - Added a dynamic fee estimation display under the DNS Update Speed setting, displaying both the HNS/KB fee rate and the estimated cost in HNS for a typical DNS update transaction (0.5 KB).
@@ -20,9 +20,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Increased the domain renewal queue batch size limit from 100 to `consensus.MAX_BLOCK_RENEWALS` (600) to allow batching up to 600 names at a time, aligning with the Handshake consensus limit, with an automatic fallback to individual renewals (`createrenewal`) if a batch fails.
 - Corrected the renewal transaction fee estimation formula to account for one input and one output per domain (approx. 250 bytes per name) plus a base transaction size of 250 bytes.
 - Updated `sendUpdate` in the background wallet service and names Redux duck to accept the user-configured `feeRate` and set it via `settxfee` before executing the `createupdate` RPC, enabling custom transaction fee rates to be applied to DNS record updates.
+- Aligned the Renewal Queue's `medium` fee option with the Redux store's `standard` fee rate, utilizing the existing `normal` translation key for UI display.
+- Changed the background node service's `MIN_FEE` constant from `0.01` to `0.001` HNS/KB to align with the core Handshake (`hsd`) standard minimum relay fee rate (`MIN_RELAY` = `1000` covans/KB).
+- Adjusted the online fee estimation caps to scale with the new `MIN_FEE` (`slow` capped at `0.001`, `standard` capped at `0.01` via `MIN_FEE * 10`, and `fast` capped at `0.05` via `MIN_FEE * 50` HNS/KB).
+- Updated the offline fallback fee rates for DNS updates, Settings UI, and the Renewal Queue to match the new online minimums: Slow fallback is now `0.001` HNS/KB, Standard is `0.01` HNS/KB, and Fast is `0.05` HNS/KB.
 
 ### Fixed
 - Fixed a parameter forwarding bug in the Renewal Queue's Redux mapping where the custom `feeRate` was ignored during dispatch, resulting in the wallet falling back to default high fee rates. The `renewMany` action now correctly forwards `feeRate` to the background wallet service, which converts it to base units and passes it as the `rate` option in the `createbatch` RPC call.
+- Fixed a discrepancy where the online minimum fee rates were capped at `0.01` HNS/KB while the offline fallbacks were lower (e.g. `0.005` in Renewal Queue), which could cause transaction submission inconsistencies. Setting `MIN_FEE` to `0.001` and adjusting the multipliers resolves this while keeping the network relay requirement met.
 
 
 ## [2.1.5] - 2026-06-27
