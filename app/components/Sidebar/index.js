@@ -6,9 +6,10 @@ import { connect } from 'react-redux';
 import './sidebar.scss';
 import ellipsify from '../../utils/ellipsify';
 import {I18nContext} from "../../utils/i18n";
-import { Logo } from '../Logo';
+import {Logo} from '../Logo';
 import {clientStub} from "../../background/node/client";
 import {NETWORKS} from "../../constants/networks";
+import {loadRenewalQueue} from '../../ducks/renewalQueue';
 const nodeClient = clientStub(() => require('electron').ipcRenderer);
 
 @withRouter
@@ -29,8 +30,10 @@ const nodeClient = clientStub(() => require('electron').ipcRenderer);
     rescanHeight: state.wallet.rescanHeight,
     address: state.wallet.receiveAddress,
     updateAvailable: state.app.updateAvailable,
+    renewalQueueNames: state.renewalQueue ? state.renewalQueue.names : [],
   }),
   dispatch => ({
+    loadRenewalQueue: (network) => dispatch(loadRenewalQueue(network)),
   }),
 )
 class Sidebar extends Component {
@@ -56,7 +59,24 @@ class Sidebar extends Component {
     network: PropTypes.string.isRequired,
     address: PropTypes.string,
     updateAvailable: PropTypes.object,
+    renewalQueueNames: PropTypes.array.isRequired,
+    loadRenewalQueue: PropTypes.func.isRequired,
   };
+
+  componentDidMount() {
+    if (this.props.network) {
+      this.props.loadRenewalQueue(this.props.network);
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      (this.props.network && this.props.network !== prevProps.network) ||
+      (this.props.walletId !== prevProps.walletId)
+    ) {
+      this.props.loadRenewalQueue(this.props.network);
+    }
+  }
 
   static contextType = I18nContext;
 
@@ -136,6 +156,12 @@ class Sidebar extends Component {
             className={isActive => `sidebar__action ${isActive ? "sidebar__action--selected" : ''}`}
           >
             {t('headingDomainManager')}
+          </NavLink>
+          <NavLink
+            to="/renewal_queue"
+            className={isActive => `sidebar__action ${isActive ? "sidebar__action--selected" : ''}`}
+          >
+            {t('headingRenewalQueue')}{this.props.renewalQueueNames.length > 0 ? ` (${this.props.renewalQueueNames.length})` : ''}
           </NavLink>
         </div>
         <div className="sidebar__section">{t('topLevelDomains')}</div>

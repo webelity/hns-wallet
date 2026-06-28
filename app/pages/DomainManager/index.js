@@ -22,6 +22,8 @@ import {showError, showSuccess} from "../../ducks/notifications";
 import dbClient from "../../utils/dbClient";
 import BulkFinalizeWarningModal from "./BulkFinalizeWarningModal";
 import {I18nContext} from "../../utils/i18n";
+import Checkbox from "../../components/Checkbox";
+import { addToRenewalQueue } from '../../ducks/renewalQueue';
 
 const {dialog} = require('@electron/remote');
 
@@ -32,15 +34,17 @@ const ITEM_PER_DROPDOWN = [
   {label: '10', value: 10},
   {label: '20', value: 20},
   {label: '50', value: 50},
+  {label: '100', value: 100},
 ];
 
 const DM_ITEMS_PER_PAGE_KEY = 'domain-manager-items-per-page';
+const DM_SORT_KEY = 'domain-manager-sort-key';
+const DM_SORT_DIRECTION = 'domain-manager-sort-direction';
 
 class DomainManager extends Component {
   static propTypes = {
     isFetching: PropTypes.bool.isRequired,
     getMyNames: PropTypes.func.isRequired,
-    namesList: PropTypes.array.isRequired,
     names: PropTypes.object.isRequired,
   };
 
@@ -51,31 +55,71 @@ class DomainManager extends Component {
     isShowingNameClaimForPayment: false,
     isShowingBulkTransfer: false,
     isConfirmingBulkFinalize: false,
+    isShowingRenewalQueue: false,
     currentPageIndex: 0,
     itemsPerPage: 10,
+    selectedNames: [],
+    sortKey: 'domain',
+    sortDirection: 'asc',
   };
 
   shouldComponentUpdate(nextProps, nextState) {
-    return this.props.namesList.join('') !== nextProps.namesList.join('')
+    return this.props.names !== nextProps.names
       || this.props.isFetching !== nextProps.isFetching
       || this.state.query !== nextState.query
       || this.state.isShowingNameClaimForPayment !== nextState.isShowingNameClaimForPayment
       || this.state.isShowingBulkTransfer !== nextState.isShowingBulkTransfer
       || this.state.isConfirmingBulkFinalize !== nextState.isConfirmingBulkFinalize
+      || this.state.isShowingRenewalQueue !== nextState.isShowingRenewalQueue
       || this.state.currentPageIndex !== nextState.currentPageIndex
-      || this.state.itemsPerPage !== nextState.itemsPerPage;
+      || this.state.itemsPerPage !== nextState.itemsPerPage
+      || this.state.selectedNames.join('') !== nextState.selectedNames.join('')
+      || this.state.sortKey !== nextState.sortKey
+      || this.state.sortDirection !== nextState.sortDirection;
   }
 
   async componentDidMount() {
     this.props.getMyNames();
     const itemsPerPage = await dbClient.get(DM_ITEMS_PER_PAGE_KEY);
+    const sortKey = await dbClient.get(DM_SORT_KEY);
+    const sortDirection = await dbClient.get(DM_SORT_DIRECTION);
 
     this.setState({
       itemsPerPage: itemsPerPage || 10,
+      sortKey: sortKey || 'domain',
+      sortDirection: sortDirection || 'asc',
     });
 
     analytics.screenView('Domain Manager');
   }
+
+  handleSelectName = (name) => {
+    this.setState(prevState => {
+      const { selectedNames } = prevState;
+      if (selectedNames.includes(name)) {
+        return { selectedNames: selectedNames.filter(n => n !== name) };
+      } else {
+        return { selectedNames: [...selectedNames, name] };
+      }
+    });
+  };
+
+  handleSelectAll = (currentPageNames) => {
+    this.setState(prevState => {
+      const { selectedNames } = prevState;
+      const isAllSelected = currentPageNames.length > 0 && currentPageNames.every(name => selectedNames.includes(name));
+      if (isAllSelected) {
+        return {
+          selectedNames: selectedNames.filter(name => !currentPageNames.includes(name)),
+        };
+      } else {
+        const toAdd = currentPageNames.filter(name => !selectedNames.includes(name));
+        return {
+          selectedNames: [...selectedNames, ...toAdd],
+        };
+      }
+    });
+  };
 
   onChange = (name) => (e) => {
     this.setState({
@@ -83,21 +127,71 @@ class DomainManager extends Component {
     });
   };
 
-  getNamesList() {
-    let namesList = Array.from(this.props.namesList);
-    let { query } = this.state;
+  handleSort = (key) => {
+    this.setState(prevState => {
+      const nextDirection = prevState.sortKey === key && prevState.sortDirection === 'asc' ? 'desc' : 'asc';
+      dbClient.put(DM_SORT_KEY, key);
+      dbClient.put(DM_SORT_DIRECTION, nextDirection);
+      return {
+        sortKey: key,
+        sortDirection: nextDirection,
+        currentPageIndex: 0,
+      };
+    });
+  };
 
-    if (query) {
-      query = query.toLowerCase();
-      namesList = namesList.filter(name => name.includes(query));
+  getNamesList() {
+    const { names, network } = this.props;
+    const { query, sortKey, sortDirection } = this.state;
+
+    if (
+      this._lastNames === names &&
+      this._lastQuery === query &&
+      this._lastSortKey === sortKey &&
+      this._lastSortDirection === sortDirection &&
+      this._cachedList
+    ) {
+      return this._cachedList;
     }
 
-    namesList.sort();
-    return namesList;
+    this._lastNames = names;
+    this._lastQuery = query;
+    this._lastSortKey = sortKey;
+    this._lastSortDirection = sortDirection;
+
+    const namesList = Object.keys(names);
+    let filteredList = namesList;
+
+    if (query) {
+      const lowerQuery = query.toLowerCase();
+      filteredList = filteredList.filter(name => name.includes(lowerQuery));
+    }
+
+    filteredList.sort((a, b) => {
+      let valA, valB;
+      if (sortKey === 'expires') {
+        const renewalWindow = networks[network].names.renewalWindow;
+        valA = (names[a]?.renewal || 0) + renewalWindow;
+        valB = (names[b]?.renewal || 0) + renewalWindow;
+      } else if (sortKey === 'paid') {
+        valA = names[a]?.highest || 0;
+        valB = names[b]?.highest || 0;
+      } else {
+        valA = a;
+        valB = b;
+      }
+
+      if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    this._cachedList = filteredList;
+    return filteredList;
   }
 
   handleExportClick() {
-    let names = this.props.namesList;
+    let names = Object.keys(this.props.names);
     let data = names.join('\n');
 
     let savePath = dialog.showSaveDialogSync({
@@ -223,7 +317,8 @@ class DomainManager extends Component {
   }
 
   renderBulkFinalize() {
-    const {names, namesList} = this.props;
+    const {names} = this.props;
+    const namesList = Object.keys(names);
     const finalizables = [];
 
     for (const name of namesList) {
@@ -251,10 +346,13 @@ class DomainManager extends Component {
       query,
       currentPageIndex: i,
       itemsPerPage: n,
+      selectedNames,
     } = this.state;
 
     const start = i * n;
     const end = start + n;
+    const currentPageNames = namesList.slice(start, end);
+    const isAllSelected = currentPageNames.length > 0 && currentPageNames.every(name => selectedNames.includes(name));
 
     return (
       <div className="domain-manager">
@@ -282,7 +380,20 @@ class DomainManager extends Component {
             {t('bulkTransfer')}
           </button>
           {this.renderBulkFinalize()}
+          {selectedNames.length > 0 && (
+            <button
+              className="extension_cta_button domain-manager__export-btn"
+              onClick={() => {
+                this.props.addToRenewalQueue(selectedNames, this.props.network);
+                this.setState({ selectedNames: [] });
+                history.push('/renewal_queue');
+              }}
+            >
+              {t('addToRenewalQueue')}
+            </button>
+          )}
         </div>
+        {this.renderControls(namesList)}
         <BidSearchInput
           className="domain-manager__search"
           placeholder={t('domainSearchPlaceholder')}
@@ -291,15 +402,29 @@ class DomainManager extends Component {
         />
         <Table className="domain-manager__table">
           <HeaderRow>
-            <HeaderItem>{t('domain')}</HeaderItem>
-            <HeaderItem>{t('expiresOn')}</HeaderItem>
-            <HeaderItem>{t('hnsPaid')}</HeaderItem>
+            <HeaderItem className="domain-manager__table__checkbox-col">
+              <Checkbox
+                checked={isAllSelected}
+                onChange={() => this.handleSelectAll(currentPageNames)}
+              />
+            </HeaderItem>
+            <HeaderItem className="clickable" onClick={() => this.handleSort('domain')}>
+              {t('domain')} {this.state.sortKey === 'domain' && (this.state.sortDirection === 'asc' ? '▲' : '▼')}
+            </HeaderItem>
+            <HeaderItem className="clickable" onClick={() => this.handleSort('expires')}>
+              {t('expiresOn')} {this.state.sortKey === 'expires' && (this.state.sortDirection === 'asc' ? '▲' : '▼')}
+            </HeaderItem>
+            <HeaderItem className="clickable" onClick={() => this.handleSort('paid')}>
+              {t('hnsPaid')} {this.state.sortKey === 'paid' && (this.state.sortDirection === 'asc' ? '▲' : '▼')}
+            </HeaderItem>
           </HeaderRow>
-          {namesList.length ? namesList.slice(start, end).map((name) => {
+          {namesList.length ? currentPageNames.map((name) => {
             return (
               <DomainRow
                 key={`${name}`}
                 name={name}
+                selected={selectedNames.includes(name)}
+                onSelect={() => this.handleSelectName(name)}
                 onClick={() => history.push(`/domain_manager/${name}`)}
               />
             );
@@ -393,7 +518,6 @@ export default withRouter(
     state => ({
       names: state.myDomains.names,
       isFetching: state.myDomains.isFetching,
-      namesList: Object.keys(state.myDomains.names),
       height: state.node.chain.height,
       network: state.wallet.network,
       wid: state.wallet.wid,
@@ -403,6 +527,7 @@ export default withRouter(
       finalizeAll: () => dispatch(finalizeAll()),
       showSuccess: (message) => dispatch(showSuccess(message)),
       showError: (message) => dispatch(showError(message)),
+      addToRenewalQueue: (names, network) => dispatch(addToRenewalQueue(names, network)),
     }),
   )(DomainManager),
 );
@@ -416,9 +541,15 @@ const DomainRow = connect(
 )(_DomainRow);
 
 function _DomainRow(props) {
-  const { name, names, onClick, network } = props;
+  const { name, names, onClick, network, selected, onSelect } = props;
   return (
     <TableRow key={`${name}`} onClick={onClick}>
+      <TableItem onClick={e => e.stopPropagation()} className="domain-manager__table__checkbox-col">
+        <Checkbox
+          checked={selected}
+          onChange={onSelect}
+        />
+      </TableItem>
       <TableItem>{formatName(name)}</TableItem>
       <TableItem>
         <Blocktime

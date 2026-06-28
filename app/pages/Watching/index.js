@@ -28,6 +28,7 @@ const ITEM_PER_DROPDOWN = [
   { label: '10', value: 10 },
   { label: '20', value: 20 },
   { label: '50', value: 50 },
+  { label: '100', value: 100 },
 ];
 
 const WATCHING_ITEMS_PER_PAGE_KEY = 'watching-items-per-page';
@@ -184,6 +185,7 @@ class Watching extends Component {
       query,
     } = this.state;
     const {t} = this.context;
+    const filteredNames = this.getFilteredNames();
 
     return (
       <div className="watching">
@@ -242,8 +244,8 @@ class Watching extends Component {
         <Table className="watching-table">
           {this.renderHeaders()}
           {this.renderCreationRow()}
-          {this.renderRows()}
-          {this.renderControls()}
+          {this.renderRows(filteredNames)}
+          {this.renderControls(filteredNames)}
         </Table>
       </div>
     );
@@ -317,11 +319,38 @@ class Watching extends Component {
     );
   }
 
-  renderGoTo() {
-    const { currentPageIndex, itemsPerPage } = this.state;
+  getFilteredNames() {
     const { names } = this.props;
-    const {t} = this.context;
-    const totalPages = Math.ceil(names.length / itemsPerPage);
+    const { query } = this.state;
+
+    if (
+      this._lastNames === names &&
+      this._lastQuery === query &&
+      this._cachedNames
+    ) {
+      return this._cachedNames;
+    }
+
+    this._lastNames = names;
+    this._lastQuery = query;
+
+    if (!query) {
+      this._cachedNames = names;
+      return names;
+    }
+
+    const fuse = new Fuse(names.map(name => ({ name })), {
+      keys: ['name'],
+    });
+
+    this._cachedNames = fuse.search(query).map(({ name }) => name);
+    return this._cachedNames;
+  }
+
+  renderGoTo(filteredNames) {
+    const { currentPageIndex, itemsPerPage } = this.state;
+    const { t } = this.context;
+    const totalPages = Math.ceil(filteredNames.length / itemsPerPage);
 
     return (
       <div className="domain-manager__page-control__dropdowns">
@@ -356,17 +385,14 @@ class Watching extends Component {
     )
   }
 
-  renderControls() {
+  renderControls(filteredNames) {
     const {
       currentPageIndex,
       itemsPerPage,
     } = this.state;
-    const {
-      names,
-    } = this.props;
 
-    const totalPages = Math.ceil(names.length / itemsPerPage);
-    const pageIndices = getPageIndices(names, itemsPerPage, currentPageIndex);
+    const totalPages = Math.ceil(filteredNames.length / itemsPerPage);
+    const pageIndices = getPageIndices(filteredNames, itemsPerPage, currentPageIndex);
 
     return (
       <div className="domain-manager__page-control">
@@ -403,36 +429,23 @@ class Watching extends Component {
             })}
           />
         </div>
-        {this.renderGoTo()}
+        {this.renderGoTo(filteredNames)}
       </div>
     )
   }
 
-  renderRows() {
-    const {names, history} = this.props;
-    const {query, currentPageIndex: s, itemsPerPage: n } = this.state;
+  renderRows(filteredNames) {
+    const { history } = this.props;
+    const { currentPageIndex: s, itemsPerPage: n } = this.state;
 
-    if (!names.length) {
-      return <EmptyResult />;
-    }
-
-    if (!this.fuse) {
-      this.fuse = new Fuse(names.map(name => ({name})), {
-        keys: ['name'],
-      });
-    }
-    const results = query
-      ? this.fuse.search(query).map(({name}) => name)
-      : names;
-
-    if (!results.length) {
+    if (!filteredNames.length) {
       return <EmptyResult />;
     }
 
     const start = s * n;
     const end = start + n;
 
-    return results.slice(start, end).map(name => (
+    return filteredNames.slice(start, end).map(name => (
       <TableRow
         key={name}
         onClick={() => history.push(`/domain/${name}`)}

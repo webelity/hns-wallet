@@ -754,25 +754,75 @@ class WalletService {
     );
   }
 
-  // not used, but can be in the future
-  renewMany = async (names) => {
+  renewMany = async (names, feeRate) => {
     if (!names.length) {
       throw new Error('Nothing to do.');
     }
-    const actions = names.map(name => ['RENEW', name]);
 
-    // Chunk into multiple batches to stay within consensus limits
-    const chunkedActions = [];
-    const chunkSize = consensus.MAX_BLOCK_RENEWALS / 6;
-    for(let i = 0; i < actions.length; i += chunkSize) {
-      chunkedActions.push(actions.slice(i, i + chunkSize));
+    const wallet = await this.node.wdb.get(this.name);
+    const validNames = [];
+    const failedNames = [];
+
+    for (const name of names) {
+      try {
+        const rawName = Buffer.from(name, 'ascii');
+        const nameHash = hashName(rawName);
+        const ns = await wallet.getNameState(nameHash);
+        if (!ns) {
+          failedNames.push({ name, error: 'Name state not found.' });
+          continue;
+        }
+        const coin = await wallet.getCoin(ns.owner.hash, ns.owner.index);
+        if (!coin) {
+          failedNames.push({ name, error: 'Wallet does not own name.' });
+          continue;
+        }
+        const type = coin.covenant.type;
+        if (type === types.REGISTER ||
+            type === types.UPDATE ||
+            type === types.RENEW ||
+            type === types.FINALIZE) {
+          validNames.push(name);
+        } else {
+          failedNames.push({ name, error: `Name is in a non-renewable state (${coin.covenant.type}).` });
+        }
+      } catch (e) {
+        failedNames.push({ name, error: e.message });
+      }
     }
 
-    // Only call once now, see later about repeated calls
-    return this._walletProxy(
-      () => this._executeRPC('createbatch', [chunkedActions[0], {paths: true}]),
-    );
+    const successfulNames = [];
+    const batchSize = consensus.MAX_BLOCK_RENEWALS;
+    const rate = feeRate ? Number(toBaseUnits(feeRate)) : undefined;
+
+    for (let i = 0; i < validNames.length; i += batchSize) {
+      const batch = validNames.slice(i, i + batchSize);
+      const actions = batch.map(name => ['RENEW', name]);
+
+      try {
+        await this._walletProxy(
+          () => this._executeRPC('createbatch', [actions, {paths: true, rate}])
+        );
+        successfulNames.push(...batch);
+      } catch (batchError) {
+        console.warn(`Batch renewal failed, falling back to individual renewals:`, batchError);
+        for (const name of batch) {
+          try {
+            await this._walletProxy(
+              () => this._executeRPC('createrenewal', [name])
+            );
+            successfulNames.push(name);
+          } catch (individualError) {
+            console.error(`Failed to renew name "${name}":`, individualError);
+            failedNames.push({ name, error: individualError.message });
+          }
+        }
+      }
+    }
+
+    return { successfulNames, failedNames };
   }
+
 
   sendRevealAll = async () => {
     // Only call once now, see later about repeated calls

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Proptype from 'prop-types';
-import BobLogo from '../../assets/images/bob-logo-circle.svg';
+import HnsLogo from '../../assets/images/hns-logo.png';
 import Spinner from '../../assets/images/brick-loader.svg';
 import dbClient from "../../utils/dbClient";
 import Alert from "../Alert";
@@ -60,7 +60,7 @@ class SplashScreen extends Component {
     return (
       <div style={wrapperStyle}>
         <div style={logoWrapperStyle}>
-          <div style={bobLogoStyle} />
+          <div style={hnsLogoStyle} />
         </div>
         {
           error
@@ -152,8 +152,8 @@ const logoWrapperStyle = {
   margin: '3rem 0',
 };
 
-const bobLogoStyle = {
-  backgroundImage: `url(${BobLogo})`,
+const hnsLogoStyle = {
+  backgroundImage: `url(${HnsLogo})`,
   height: '75px',
   width: '75px',
   backgroundSize: 'contain',

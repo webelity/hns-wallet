@@ -142,8 +142,8 @@ export class NodeService extends EventEmitter {
           if (error.code === 'EADDRINUSE') {
             throw new Error(`
               Could not bind to ${error.address}:${error.port}.
-              Please make sure no other hsd or Bob Wallet instance is running.
-              Quit Bob, and try again.`);
+              Please make sure no other hsd or Handshake Wallet instance is running.
+              Quit Handshake Wallet, and try again.`);
           } else {
             throw error;
           }

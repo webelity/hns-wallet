@@ -40,6 +40,37 @@ export default function showMainWindow() {
     }
   });
 
+  mainWindow.webContents.on('context-menu', (event, params) => {
+    const { Menu, MenuItem } = electron;
+    const menu = new Menu();
+
+    if (params.isEditable) {
+      menu.append(new MenuItem({ role: 'undo' }));
+      menu.append(new MenuItem({ role: 'redo' }));
+      menu.append(new MenuItem({ type: 'separator' }));
+      menu.append(new MenuItem({ role: 'cut' }));
+    }
+
+    if (params.isEditable || params.selectionText.trim().length > 0) {
+      menu.append(new MenuItem({ role: 'copy' }));
+    }
+
+    if (params.isEditable) {
+      menu.append(new MenuItem({ role: 'paste' }));
+      menu.append(new MenuItem({ role: 'selectAll' }));
+    }
+
+    menu.append(new MenuItem({ type: 'separator' }));
+    menu.append(new MenuItem({
+      label: 'Inspect Element',
+      click: () => {
+        mainWindow.webContents.inspectElement(params.x, params.y);
+      }
+    }));
+
+    menu.popup({ window: mainWindow, x: params.x, y: params.y });
+  });
+
   mainWindow.on('closed', () => {
     mainWindow = null;
 

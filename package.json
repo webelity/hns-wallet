@@ -1,24 +1,24 @@
 {
-  "name": "bob-wallet",
-  "productName": "Bob",
-  "author": "Kyokan Group, Inc.",
-  "version": "2.1.0",
+  "name": "hns-wallet",
+  "productName": "Handshake Wallet",
+  "author": "Christopher Istvan",
+  "version": "2.1.6",
   "description": "A Handshake wallet and auction manager.",
   "scripts": {
-    "build": "./scripts/package.sh",
-    "build-renderer": "NODE_ENV=production webpack --config ./configs/webpack.config.renderer.prod.babel.js",
+    "build": "node ./scripts/package.js",
+    "build-renderer": "cross-env NODE_ENV=production webpack --config ./configs/webpack.config.renderer.prod.babel.js",
     "dev": "cross-env START_HOT=1 npm run start-renderer-dev",
     "package-ci": "npm run postinstall && npm run build && electron-builder --publish always",
     "package-linux": "npm run build && electron-builder build --linux --publish never",
     "package-mac": "npm run build && electron-builder build --mac --publish never",
     "package-mac-intel": "npm run build && electron-builder build --mac --x64 --publish never",
-    "package-win": "node ./scripts/package.js && electron-builder build --win --x64 --arm64=false",
+    "package-win": "npm run build && electron-builder build --win --x64 --arm64=false",
     "prestart": "npm run build",
     "start": "cross-env NODE_ENV=production electron -r @babel/register ./app/main.js",
     "start-main-dev": "cross-env HOT=1 NODE_ENV=development electron --inspect=5858 -r @babel/register ./app/main.js",
     "start-renderer-dev": "cross-env NODE_ENV=development webpack-dev-server --config configs/webpack.config.renderer.dev.babel.js",
     "postinstall": "electron-builder install-app-deps",
-    "clean": "./scripts/clean.sh",
+    "clean": "node ./scripts/clean.js",
     "pretest": "webpack --config ./configs/webpack.config.test.babel.js",
     "test": "tape -r jsdom-global/register ./test-dist/test.js",
     "add-locale": "node scripts/add-locale.js",
@@ -26,12 +26,12 @@
   },
   "main": "./dist/main.js",
   "build": {
-    "productName": "Bob",
-    "appId": "com.kyokan.BobRelease",
+    "productName": "Handshake Wallet",
+    "appId": "com.webelity.hns-wallet",
     "protocols": {
-      "name": "bob-wallet",
+      "name": "hns-wallet",
       "schemes": [
-        "bob"
+        "hns-wallet"
       ]
     },
     "files": [
@@ -84,7 +84,7 @@
         "AppImage"
       ],
       "desktop": {
-        "MimeType": "x-scheme-handler/bob;"
+        "MimeType": "x-scheme-handler/hns-wallet;"
       },
       "category": "Development"
     },
@@ -95,14 +95,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kyokan/bob-electron.git"
+    "url": "git+https://github.com/webelity/hns-wallet.git"
   },
   "bugs": {
-    "url": "https://github.com/kyokan/bob-wallet/issues/new?template=bug_report.md"
+    "url": "https://github.com/webelity/hns-wallet/issues/new?template=bug_report.md"
   },
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "keywords": [],
-  "homepage": "https://bobwallet.io/",
+  "homepage": "https://hns.webelity.com",
   "devDependencies": {
     "@babel/cli": "7.20.7",
     "@babel/core": "7.20.12",

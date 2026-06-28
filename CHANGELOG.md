@@ -6,6 +6,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.1.6] - 2026-06-28
+### Added
+- Added an additional pagination control at the top of the Domain Manager (below the action buttons and above the search input).
+- Added a transaction fee estimation summary block in the Renewal Queue showing the estimated HNS fee and explaining Handshake's no-annual-registry-fee model.
+- Added a fee speed selector (Slow, Medium, Fast) in the Renewal Queue, defaulting to Slow to optimize fee costs for non-urgent renewals.
+- Implemented pre-filtering of domain renewal queue items in the wallet service to exclude domains in non-renewable states (e.g. Shakedex `TRANSFER` lockups), preventing whole-batch failures.
+
+### Changed
+- Increased the domain renewal queue batch size limit from 100 to `consensus.MAX_BLOCK_RENEWALS` (600) to allow batching up to 600 names at a time, aligning with the Handshake consensus limit.
+- Corrected the renewal transaction fee estimation formula to account for one input and one output per domain (approx. 250 bytes per name).
+
+### Fixed
+- Fixed a parameter forwarding bug in the Renewal Queue's Redux mapping that caused the custom fee rate to be ignored, resulting in the wallet falling back to default high fee rates.
+
+
+## [2.1.5] - 2026-06-27
+### Added
+- Added support for bulk renewing more than 100 domains at a time in the Renewal Queue.
+- Implemented queue processing in batches of 100 names with automatic fallback to individual renewals if a batch fails (e.g. due to the 2-year renewal limit).
+- Added a "100" option to the page size selectors in the Domain Manager, Your Bids, and Watching lists.
+
+### Changed
+- Improved Domain Manager performance by memoizing the sorting and filtering of names to avoid redundant sorting on every render (such as when checking boxes or paginating).
+- Optimized Domain Manager memory and CPU usage by replacing the expensive `.join('')` comparison in `shouldComponentUpdate` with an instantaneous object reference check, and removing `namesList` from the Redux mapping.
+- Added persistence for the Domain Manager's sort order (column and direction) so that sorting settings are retained across page refreshes.
+- Changed the domain renewal queue to be specific to the logged-in user's wallet (scoped by wallet ID) instead of shared globally across all wallets.
+- Added automatic migration of legacy global renewal queue data to the wallet-specific queue on first load.
+- Updated the sidebar to automatically reload the renewal queue when switching between wallets.
+
+### Fixed
+- Fixed a bug on the Watching and Your Bids pages where the fuzzy search index became stale and failed to reflect newly added/removed watched domains or newly placed bids.
+- Fixed a bug on the Watching and Your Bids pages where the pagination controls did not update based on active search results.
+- Optimized fuzzy search performance on the Watching and Your Bids pages by memoizing search results to avoid redundant search queries on every render.
+
+
 ## [2.1.4] - 2026-06-27
 ### Added
 - Implemented a custom Right-Click Context Menu with inspection and editing tools.

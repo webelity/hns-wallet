@@ -10,7 +10,7 @@ export function Logo(props) {
       })}
       onClick={props.onClick}
     >
-      <span className="logo__bob" />
+      <span className="logo__hns" />
     </div>
   );
 }

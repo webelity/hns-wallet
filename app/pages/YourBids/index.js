@@ -29,6 +29,7 @@ const ITEM_PER_DROPDOWN = [
   { label: '10', value: 10 },
   { label: '20', value: 20 },
   { label: '50', value: 50 },
+  { label: '100', value: 100 },
 ];
 
 const YOUR_BIDS_ITEMS_PER_PAGE_KEY = 'your-bids-items-per-page';
@@ -134,6 +135,7 @@ class YourBids extends Component {
 
   render() {
     const {t} = this.context;
+    const filteredBids = this.getFilteredBids();
     return (
       <div className="bids">
         <div className="bids__top">
@@ -171,8 +173,8 @@ class YourBids extends Component {
         </div>
         <Table className="bids-table">
           <Header />
-          {this.renderRows()}
-          {this.renderControls()}
+          {this.renderRows(filteredBids)}
+          {this.renderControls(filteredBids)}
         </Table>
       </div>
     );
@@ -195,11 +197,49 @@ class YourBids extends Component {
     )
   };
 
-  renderGoTo() {
+  getFilteredBids() {
+    const { order, map, filter } = this.props;
+    const { activeFilter, query } = this.state;
+
+    if (
+      this._lastOrder === order &&
+      this._lastMap === map &&
+      this._lastFilter === filter &&
+      this._lastActiveFilter === activeFilter &&
+      this._lastQuery === query &&
+      this._cachedBids
+    ) {
+      return this._cachedBids;
+    }
+
+    this._lastOrder = order;
+    this._lastMap = map;
+    this._lastFilter = filter;
+    this._lastActiveFilter = activeFilter;
+    this._lastQuery = query;
+
+    const yourBids = activeFilter
+      ? filter[activeFilter]?.map(id => map[id]) || []
+      : order?.map(id => map[id]) || [];
+
+    if (!query) {
+      this._cachedBids = yourBids;
+      return yourBids;
+    }
+
+    const fuse = new Fuse(yourBids, {
+      keys: ['name'],
+      threshold: 0.4,
+    });
+
+    this._cachedBids = fuse.search(query);
+    return this._cachedBids;
+  }
+
+  renderGoTo(filteredBids) {
     const { currentPageIndex, itemsPerPage } = this.state;
-    const {t} = this.context;
-    const yourBids = this.getCurrentBids();
-    const totalPages = Math.ceil(yourBids.length / itemsPerPage);
+    const { t } = this.context;
+    const totalPages = Math.ceil(filteredBids.length / itemsPerPage);
     return (
       <div className="domain-manager__page-control__dropdowns">
         <div className="domain-manager__go-to">
@@ -231,16 +271,14 @@ class YourBids extends Component {
     )
   }
 
-  renderControls() {
+  renderControls(filteredBids) {
     const {
       currentPageIndex,
       itemsPerPage,
     } = this.state;
 
-    const yourBids = this.getCurrentBids();
-
-    const totalPages = Math.ceil(yourBids.length / itemsPerPage);
-    const pageIndices = getPageIndices(yourBids, itemsPerPage, currentPageIndex);
+    const totalPages = Math.ceil(filteredBids.length / itemsPerPage);
+    const pageIndices = getPageIndices(filteredBids, itemsPerPage, currentPageIndex);
 
     return (
       <div className="domain-manager__page-control">
@@ -277,42 +315,27 @@ class YourBids extends Component {
             })}
           />
         </div>
-        {this.renderGoTo()}
+        {this.renderGoTo(filteredBids)}
       </div>
     )
   }
 
-  renderRows() {
+  renderRows(filteredBids) {
     const { history } = this.props;
-    const { query, currentPageIndex: s, itemsPerPage: n, loading } = this.state;
+    const { currentPageIndex: s, itemsPerPage: n, loading } = this.state;
 
     if (loading) {
       return <LoadingResult />;
     }
 
-    const yourBids = this.getCurrentBids();
-
-    if (!yourBids.length) {
-      return <EmptyResult />;
-    }
-
-    if (!this.fuse) {
-      this.fuse = new Fuse(yourBids, {
-        keys: ['name'],
-        threshold: .4,
-      });
-    }
-
-    const bids = query ? this.fuse.search(query) : yourBids;
-
-    if (!bids.length) {
+    if (!filteredBids.length) {
       return <EmptyResult />;
     }
 
     const start = s * n;
     const end = start + n;
 
-    return bids.slice(start, end).map((bid, i) => (
+    return filteredBids.slice(start, end).map((bid, i) => (
       <TableRow key={`${bid.name}-${i}`} onClick={() => history.push(`/domain/${bid.name}`)}>
         <TableItem><BidStatus name={bid.name} /></TableItem>
         <TableItem>{formatName(bid.name)}</TableItem>

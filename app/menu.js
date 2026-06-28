@@ -37,35 +37,24 @@ export default class MenuBuilder {
   }
 
   setupDevelopmentEnvironment() {
-    const mainWin = getMainWindow();
-    mainWin.webContents.on('context-menu', (e, props) => {
-      const {x, y} = props;
-      Menu.buildFromTemplate([
-        {
-          label: 'Inspect element',
-          click: () => {
-            mainWin.inspectElement(x, y);
-          }
-        }
-      ]).popup(mainWin);
-    });
+    // Context menu is now handled in mainWindow.js
   }
 
   buildDarwinTemplate() {
     const mainWin = getMainWindow();
 
     const subMenuAbout = {
-      label: 'Bob',
+      label: 'Handshake Wallet',
       submenu: [
         {
-          label: 'About Bob',
+          label: 'About Handshake Wallet',
           role: 'about'
         },
         {type: 'separator'},
         {label: 'Services', submenu: []},
         {type: 'separator'},
         {
-          label: 'Hide Bob',
+          label: 'Hide Handshake Wallet',
           accelerator: 'Command+H',
           role: 'hide'
         },
@@ -238,7 +227,7 @@ export default class MenuBuilder {
         label: 'Help',
         submenu: [
           {
-            label: "About Bob",
+            label: "About Handshake Wallet",
             click: () => {
               shell.openExternal(pkg.homepage)
             }

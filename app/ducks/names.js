@@ -11,6 +11,8 @@ import {
 } from './walletActions';
 import { SET_NAME } from './namesReducer';
 import {NAME_STATES} from "../constants/names";
+import { removeFromRenewalQueue } from './renewalQueue';
+
 
 export const RECORD_TYPE = {
   DS: 'DS',
@@ -301,13 +303,20 @@ export const sendRegisterAll = () => async (dispatch) => {
   return await walletClient.sendRegisterAll();
 };
 
-export const sendRenewal = (name) => async (dispatch) => {
+export const sendRenewal = (name, passphrase) => async (dispatch, getState) => {
   if (!name) {
     return;
   }
-  await new Promise((resolve, reject) => {
-    dispatch(getPassphrase(resolve, reject));
-  });
+  const { wid, watchOnly } = getState().wallet;
+  if (!watchOnly) {
+    if (passphrase) {
+      await walletClient.unlock(wid, passphrase);
+    } else {
+      await new Promise((resolve, reject) => {
+        dispatch(getPassphrase(resolve, reject));
+      });
+    }
+  }
 
   await namesDb.storeName(name);
   return await walletClient.sendRenewal(name);
@@ -354,15 +363,30 @@ export const renewAll = () => async (dispatch) => {
   return await walletClient.renewAll();
 };
 
-export const renewMany = (names) => async (dispatch) => {
+export const renewMany = (names, passphrase, feeRate) => async (dispatch, getState) => {
   if (!names || !names.length) {
-    return;
+    return { successfulNames: [], failedNames: [] };
   }
 
-  await new Promise((resolve, reject) => {
-    dispatch(getPassphrase(resolve, reject));
-  });
-  await walletClient.renewMany(names);
+  const { wid, watchOnly, network } = getState().wallet;
+  if (!watchOnly) {
+    if (passphrase) {
+      await walletClient.unlock(wid, passphrase);
+    } else {
+      await new Promise((resolve, reject) => {
+        dispatch(getPassphrase(resolve, reject));
+      });
+    }
+  }
+  const { successfulNames, failedNames } = await walletClient.renewMany(names, feeRate);
+
+  if (successfulNames && successfulNames.length) {
+    for (const name of successfulNames) {
+      await dispatch(removeFromRenewalQueue(name, network));
+    }
+  }
+
+  return { successfulNames, failedNames };
 };
 
 export const sendTransfer = (name, recipient) => async (dispatch) => {

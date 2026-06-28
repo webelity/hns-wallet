@@ -141,7 +141,7 @@ export default class Settings extends Component {
     try {
       const {network} = this.props;
       const savePath = dialog.showSaveDialogSync({
-        defaultPath: `bob-debug-${network}.log`,
+        defaultPath: `hns-debug-${network}.log`,
         filters: [{name: 'log file', extensions: ['log']}],
       });
       if (!savePath) return;
@@ -586,7 +586,7 @@ export default class Settings extends Component {
           </Route>
         </Switch>
         <div className="settings__footer">
-          Bob v{pkg.version}
+          Handshake Wallet v{pkg.version}
         </div>
       </div>
     )

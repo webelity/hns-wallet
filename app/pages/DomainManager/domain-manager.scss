@@ -56,17 +56,27 @@
   &__table {
     .table {
       &__header {
+        &__item.clickable {
+          cursor: pointer;
+          user-select: none;
+        }
+
         &__item:nth-of-type(1) {
+          flex: 0 0 3rem;
+          justify-content: center;
+        }
+
+        &__item:nth-of-type(2) {
           flex: 0 0 12rem;
           flex-grow: 1;
         }
 
-        &__item:nth-of-type(3) {
+        &__item:nth-of-type(4) {
           text-align: left;
           flex: 1 1 auto;
         }
 
-        &__item:nth-of-type(2) {
+        &__item:nth-of-type(3) {
           text-align: left;
           flex: 0 0 6rem;
         }
@@ -85,16 +95,21 @@
         }
 
         &__item:nth-of-type(1) {
+          flex: 0 0 3rem;
+          justify-content: center;
+        }
+
+        &__item:nth-of-type(2) {
           flex: 0 0 12rem;
           flex-grow: 1;
         }
 
-        &__item:nth-of-type(3) {
+        &__item:nth-of-type(4) {
           text-align: left;
           flex: 1 1 auto;
         }
 
-        &__item:nth-of-type(2) {
+        &__item:nth-of-type(3) {
           text-align: left;
           flex: 0 0 6rem;
         }
@@ -389,6 +404,98 @@
     button {
       @extend %btn-primary;
       flex: 1 0 auto;
+    }
+  }
+}
+
+.renewal-queue-container {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.renewal-queue {
+  max-height: 15rem;
+  overflow-y: auto;
+  margin: 1rem 0;
+  border: 1px solid $athens-gray;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+
+  &__item {
+    @extend %row-nowrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid $athens-gray;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &__name {
+      font-weight: 500;
+      font-size: 0.85rem;
+    }
+
+    &__status {
+      font-size: 0.8rem;
+      &--waiting {
+        color: rgba($black, 0.4);
+      }
+      &--processing {
+        color: $azure-blue;
+        font-weight: bold;
+      }
+      &--success {
+        color: $success-green;
+        font-weight: bold;
+      }
+      &--failed {
+        color: $orange-red;
+        font-size: 0.75rem;
+        max-width: 12rem;
+        text-align: right;
+        word-break: break-all;
+      }
+    }
+  }
+
+  &__password-container {
+    margin: 1rem 0;
+  }
+
+  &__input-label {
+    color: rgba($black, 0.5);
+    font-weight: 600;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &__password-input {
+    @extend %box-input;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem 0.75rem;
+
+    input {
+      outline: none;
+      width: 100%;
+      font-size: 0.85rem;
+      border: none;
+      background: transparent;
+    }
+  }
+
+  &__actions {
+    @extend %row-nowrap;
+    justify-content: center;
+    width: 100%;
+    margin-top: 1rem;
+
+    button {
+      @extend %btn-primary;
+      flex: 1 0 auto;
+      height: 2.25rem;
     }
   }
 }

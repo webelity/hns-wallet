@@ -35,7 +35,7 @@ if (process.env.NODE_ENV === 'development' && (process.platform === 'win32' || p
     path.resolve(path.join(app.getAppPath(), 'main.js')),
   ]);
 } else {
-  app.setAsDefaultProtocolClient('bob');
+  app.setAsDefaultProtocolClient('hns-wallet');
 }
 
 // Deeplink handler for osx
@@ -83,13 +83,14 @@ if (isPrimaryInstance) {
 
       await shakedexService.start(server);
     } catch (e) {
-      dialog.showMessageBox(null, {
+      dialog.showMessageBoxSync(null, {
         type: 'error',
         buttons: ['OK'],
         title: 'Couldn\'t Start',
-        message: 'An error occurred that prevented Bob from starting. Please quit and try again.',
+        message: 'An error occurred that prevented Handshake Wallet from starting. Please quit and try again.',
         detail: `Error: ${e.message}\nStack: ${e.stack}`,
-      }, () => app.quit());
+      });
+      app.quit();
       Sentry.captureException(e);
       return;
     }
