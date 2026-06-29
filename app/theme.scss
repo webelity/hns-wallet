@@ -1,0 +1,817 @@
+/* Light and Dark Theme Variable Definitions */
+
+.theme-light {
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f3f5;
+  
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --text-muted: #868e96;
+  
+  --border-primary: #e9ecef;
+  --border-secondary: #dee2e6;
+  
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  
+  --sidebar-active-bg: #2480fd;
+  --sidebar-active-text: #ffffff;
+  --input-border-focus: #2480fd;
+  --input-bg: #ffffff;
+}
+
+.theme-dark {
+  --bg-primary: #08090a;
+  --bg-secondary: #101115;
+  --bg-tertiary: #17181e;
+  
+  --text-primary: #f8f9fa;
+  --text-secondary: #d1d2d6;
+  --text-muted: #909296;
+  
+  --border-primary: #1c1d24;
+  --border-secondary: #282933;
+  
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 16px -2px rgba(0, 0, 0, 0.4), 0 4px 8px -2px rgba(0, 0, 0, 0.2);
+  
+  --sidebar-active-bg: #2480fd;
+  --sidebar-active-text: #ffffff;
+  --input-border-focus: #2480fd;
+  --input-bg: #17181e;
+}
+
+/* Global Theme Overrides */
+
+.app {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  font-family: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  
+  /* Main Layout Containers */
+  &__main-wrapper {
+    background-color: var(--bg-primary) !important;
+    transition: background-color 0.2s ease;
+  }
+  
+  &__content {
+    background-color: var(--bg-primary) !important;
+  }
+
+  &__uninitialized-wrapper {
+    background-color: var(--bg-primary) !important;
+  }
+
+  &__uninitialized {
+    background: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-primary) !important;
+    box-shadow: var(--shadow-md) !important;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  &__login {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-primary) !important;
+    box-shadow: var(--shadow-md) !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  &__component-wrapper {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-primary) !important;
+    box-shadow: var(--shadow-md) !important;
+  }
+  
+  &__sidebar-wrapper {
+    border-right: 1px solid var(--border-primary) !important;
+  }
+}
+
+/* Sidebar Component Overrides */
+.sidebar {
+  background-color: var(--bg-secondary) !important;
+  border-right: 1px solid var(--border-primary) !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+
+  &__action {
+    color: var(--text-secondary) !important;
+    font-family: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    
+    &:hover {
+      background-color: var(--bg-tertiary) !important;
+      color: var(--text-primary) !important;
+    }
+    
+    &--selected {
+      background-color: rgba(36, 128, 253, 0.15) !important;
+      color: #2480fd !important;
+      
+      &:hover {
+        background-color: rgba(36, 128, 253, 0.2) !important;
+        color: #2480fd !important;
+      }
+    }
+  }
+
+  &__section {
+    color: var(--text-muted) !important;
+    font-family: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  }
+
+  &__logoHeader {
+    border-bottom: 1px solid var(--border-primary) !important;
+    
+    &__title {
+      color: var(--text-primary) !important;
+    }
+  }
+  
+  &__footer {
+    border-top: 1px solid var(--border-primary) !important;
+    background-color: var(--bg-secondary) !important;
+    
+    &__title, &__text {
+      color: var(--text-muted) !important;
+    }
+  }
+}
+
+/* Topbar Component Overrides */
+.topbar {
+  background-color: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border-primary) !important;
+  color: var(--text-primary) !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+
+  &__title {
+    color: var(--text-primary) !important;
+  }
+
+  &__icon {
+    filter: none !important;
+    opacity: 0.8;
+    cursor: pointer;
+    
+    &:hover {
+      opacity: 1;
+    }
+
+    &--settings {
+      .theme-dark & {
+        filter: invert(1) brightness(1.5) !important;
+      }
+    }
+  }
+  
+  /* Search input in topbar */
+  &__search {
+    background-color: var(--bg-tertiary) !important;
+    border: 1px solid var(--border-primary) !important;
+    
+    input {
+      color: var(--text-primary) !important;
+      
+      &::placeholder {
+        color: var(--text-muted) !important;
+      }
+    }
+  }
+}
+
+/* Dropdown Setting Menu */
+.setting-menu {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border-primary) !important;
+  box-shadow: var(--shadow-md) !important;
+  color: var(--text-primary) !important;
+  border-radius: 8px !important;
+  
+  .theme-dark & {
+    background-color: rgba(16, 17, 21, 0.9) !important;
+    backdrop-filter: blur(16px) saturate(120%) !important;
+  }
+
+  &__balance-container {
+    border-bottom: 1px solid var(--border-primary) !important;
+    
+    &__item {
+      &__label {
+        color: var(--text-muted) !important;
+      }
+      &__amount {
+        color: var(--text-primary) !important;
+      }
+    }
+  }
+
+  &__items__item {
+    color: var(--text-secondary) !important;
+    border-top: 1px solid var(--border-primary) !important;
+    
+    &:hover {
+      background-color: var(--bg-tertiary) !important;
+      color: var(--text-primary) !important;
+    }
+  }
+}
+
+/* Form Inputs, Dropdowns, and Selection Boxes */
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+textarea,
+select,
+.box-input {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-primary) !important;
+  border-radius: 8px !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 0.9rem !important;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+
+  &::placeholder {
+    color: var(--text-muted) !important;
+    opacity: 0.7;
+  }
+
+  &:focus {
+    border-color: var(--input-border-focus) !important;
+    background-color: var(--bg-secondary) !important;
+    outline: none !important;
+  }
+}
+
+/* Dropdown Component Overrides */
+.dropdown {
+  color: var(--text-primary) !important;
+  font-family: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+
+  &__current-item {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-primary) !important;
+    border-radius: 8px !important;
+    font-family: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+
+    &::after {
+      border-top: 1.5px solid var(--text-primary) !important;
+      border-left: 1.5px solid var(--text-primary) !important;
+    }
+  }
+
+  &__options {
+    background-color: var(--bg-secondary) !important;
+    border: 1px solid var(--border-primary) !important;
+    border-top: none !important;
+    box-shadow: var(--shadow-md) !important;
+    border-bottom-left-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+    z-index: 200;
+  }
+
+  &__option {
+    color: var(--text-primary) !important;
+    font-family: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+
+    &:hover {
+      background-color: var(--bg-tertiary) !important;
+      color: var(--text-primary) !important;
+    }
+
+    &--disabled {
+      color: var(--text-muted) !important;
+      opacity: 0.35 !important;
+    }
+  }
+
+  /* Specificity overrides for open state */
+  &--opened {
+    .dropdown__current-item {
+      border-bottom-left-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      background-color: var(--bg-tertiary) !important;
+    }
+
+    .dropdown__options {
+      background-color: var(--bg-secondary) !important;
+    }
+  }
+
+  /* Specificity overrides for reversed state */
+  &--reversed {
+    .dropdown__current-item {
+      background-color: var(--bg-tertiary) !important;
+      border: 1px solid var(--border-primary) !important;
+    }
+
+    .dropdown__options {
+      background-color: var(--bg-secondary) !important;
+      border: 1px solid var(--border-primary) !important;
+    }
+  }
+}
+
+/* Account/Portfolio Cards and Sections */
+.account {
+  &__header {
+    background-color: var(--bg-secondary) !important;
+    border: 1px solid var(--border-primary) !important;
+    box-shadow: var(--shadow-sm) !important;
+    border-radius: 12px !important;
+    padding: 1.5rem 2rem !important;
+    
+    &__section {
+      border-right: 1px solid var(--border-primary) !important;
+      
+      &:last-child {
+        border-right: none !important;
+      }
+      
+      .label {
+        color: var(--text-muted) !important;
+      }
+      .amount {
+        color: var(--text-primary) !important;
+      }
+      .subtext {
+        color: var(--text-secondary) !important;
+      }
+    }
+  }
+
+  &__panel-title {
+    color: var(--text-primary) !important;
+  }
+  
+  &__transactions__loading {
+    color: var(--text-muted) !important;
+  }
+}
+
+/* Action Cards (Transferring, Bidding, Finalizing, etc.) */
+.cards__card {
+  &--red {
+    background-color: #ffdcdc !important;
+    border: solid 1px #ff9d9d !important;
+    .title { color: #991b1b !important; }
+    .subtitle { color: #7f1d1d !important; }
+  }
+
+  &--yellow {
+    background-color: #fff4c6 !important;
+    border: solid 1px #ffcd00 !important;
+    .title { color: #854d0e !important; }
+    .subtitle { color: #713f12 !important; }
+  }
+
+  &--green {
+    background-color: #daffda !important;
+    border: solid 1px #84ff93 !important;
+    .title { color: #065f46 !important; }
+    .subtitle { color: #064e3b !important; }
+  }
+}
+
+/* Custom Table Component Overrides */
+.table {
+  &__header {
+    background-color: var(--bg-tertiary) !important;
+    border: 1px solid var(--border-primary) !important;
+    color: var(--text-secondary) !important;
+    
+    &__item {
+      color: var(--text-secondary) !important;
+    }
+  }
+
+  &__row {
+    background-color: var(--bg-secondary) !important;
+    border: 1px solid var(--border-primary) !important;
+    border-top: none !important;
+    color: var(--text-primary) !important;
+    
+    &__item {
+      color: var(--text-primary) !important;
+    }
+  }
+}
+
+/* DNS Records Table Overrides */
+.records-table {
+  &__action-row {
+    background-color: var(--bg-tertiary) !important;
+    border: 1px solid var(--border-primary) !important;
+    border-top: none !important;
+
+    &__dismiss-link {
+      color: #2480fd !important;
+      
+      &:hover:not(:disabled) {
+        color: #1a6edb !important;
+      }
+
+      &:disabled {
+        opacity: 0.35 !important;
+        color: var(--text-muted) !important;
+      }
+    }
+
+    &__submit-btn {
+      &:disabled {
+        opacity: 0.4 !important;
+      }
+    }
+  }
+
+  &__create-record {
+    background-color: var(--bg-secondary) !important;
+    border: 1px solid var(--border-primary) !important;
+    border-top: none !important;
+    
+    .table__row__item input {
+      background-color: transparent !important;
+      color: var(--text-primary) !important;
+      border-bottom: 1px dashed var(--border-primary) !important;
+      
+      &:focus {
+        border-bottom: 1px dashed var(--input-border-focus) !important;
+      }
+    }
+  }
+}
+
+/* Tables (Domain Lists, Transactions) */
+.table, table {
+  background-color: var(--bg-secondary) !important;
+  border-radius: 12px !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border: 1px solid var(--border-primary) !important;
+  overflow: hidden !important;
+  box-shadow: var(--shadow-sm) !important;
+
+  tr {
+    background-color: var(--bg-secondary) !important;
+    
+    &:hover td {
+      background-color: var(--bg-tertiary) !important;
+    }
+  }
+
+  th {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--text-secondary) !important;
+    border-bottom: 1px solid var(--border-primary) !important;
+    font-weight: 600 !important;
+    padding: 1rem !important;
+    text-transform: uppercase !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.05em !important;
+  }
+
+  td {
+    border-bottom: 1px solid var(--border-primary) !important;
+    color: var(--text-primary) !important;
+    padding: 1rem !important;
+    background-color: var(--bg-secondary) !important;
+    transition: background-color 0.15s ease;
+  }
+
+  tr:last-child td {
+    border-bottom: none !important;
+  }
+}
+
+/* Transactions List Theme Overrides */
+.transactions {
+  &__header {
+    background-color: var(--bg-secondary) !important;
+    border-bottom: 1px solid var(--border-primary) !important;
+    border-top: 1px solid var(--border-primary) !important;
+  }
+
+  &__search {
+    background-color: var(--bg-tertiary) !important;
+    border: 1px solid var(--border-primary) !important;
+    border-radius: 8px !important;
+
+    input {
+      background-color: var(--bg-tertiary) !important;
+      color: var(--text-primary) !important;
+      border: none !important;
+      padding: 0.4rem 0.75rem !important;
+      
+      &::placeholder {
+        color: var(--text-muted) !important;
+      }
+    }
+  }
+}
+
+.transaction {
+  border-bottom: 1px solid var(--border-primary) !important;
+  color: var(--text-primary) !important;
+
+  &__title {
+    color: var(--text-primary) !important;
+
+    &--pending {
+      color: var(--text-muted) !important;
+    }
+  }
+
+  &__subtitle {
+    color: var(--text-muted) !important;
+  }
+
+  &__number {
+    color: var(--text-primary) !important;
+
+    &--positive {
+      color: #0bca6b !important;
+    }
+
+    &--negative {
+      color: #f53923 !important;
+    }
+
+    &--pending {
+      color: var(--text-muted) !important;
+    }
+
+    &--neutral {
+      color: var(--text-primary) !important;
+    }
+  }
+
+  &__party {
+    color: var(--text-muted) !important;
+
+    &__btn {
+      color: var(--text-secondary) !important;
+
+      &:hover {
+        color: var(--text-primary) !important;
+      }
+    }
+  }
+
+  &__tx-icon {
+    &--pending {
+      .theme-dark & {
+        filter: invert(1) brightness(1.5) !important;
+      }
+    }
+  }
+}
+
+/* Modals */
+.modal-content, 
+.modal, 
+.passphrase-modal, 
+.sync-modal,
+.ledger-modal {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-primary) !important;
+  box-shadow: var(--shadow-md) !important;
+  border-radius: 12px !important;
+  
+  .theme-dark & {
+    background-color: rgba(18, 19, 24, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+  }
+}
+
+/* Buttons Modernization */
+button, .btn {
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  font-weight: 500 !important;
+}
+
+.btn-secondary, %btn-secondary {
+  border: 1px solid var(--border-primary) !important;
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  
+  &:hover {
+    background-color: var(--border-primary) !important;
+    border-color: var(--border-secondary) !important;
+  }
+  
+  &:active {
+    background-color: var(--bg-secondary) !important;
+  }
+}
+
+/* Scrollbars for Dark Theme */
+.theme-dark {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-secondary);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+  }
+}
+
+/* Send Funds Modal Theme Overrides */
+.send {
+  color: var(--text-primary) !important;
+
+  &__title {
+    color: var(--text-primary) !important;
+  }
+
+  &__label,
+  &__confirm__label,
+  &__input-disclaimer {
+    color: var(--text-muted) !important;
+  }
+
+  &__amount-input {
+    background-color: var(--bg-tertiary) !important;
+    border: 1px solid var(--border-primary) !important;
+    color: var(--text-primary) !important;
+    
+    input {
+      background-color: transparent !important;
+      color: var(--text-primary) !important;
+      border: none !important;
+    }
+
+    &__unit {
+      color: var(--text-primary) !important;
+    }
+  }
+
+  &__input {
+    background-color: var(--bg-tertiary) !important;
+    border: 1px solid var(--border-primary) !important;
+    color: var(--text-primary) !important;
+    
+    input {
+      background-color: transparent !important;
+      color: var(--text-primary) !important;
+      border: none !important;
+    }
+  }
+
+  &__network-fee {
+    &__select {
+      background-color: var(--bg-tertiary) !important;
+      border: 1px solid var(--border-primary) !important;
+      color: var(--text-primary) !important;
+
+      &::after {
+        border-top: 1.5px solid var(--text-primary) !important;
+        border-right: 1.5px solid var(--text-primary) !important;
+      }
+    }
+
+    &__fee-amount {
+      background-color: var(--bg-tertiary) !important;
+      border: 1px solid var(--border-primary) !important;
+      color: var(--text-muted) !important;
+    }
+  }
+
+  &__confirm {
+    &__address {
+      color: var(--text-primary) !important;
+      font-family: 'Roboto Mono', monospace !important;
+    }
+
+    &__time-text {
+      color: var(--text-primary) !important;
+    }
+
+    &__summary {
+      background-color: var(--bg-tertiary) !important;
+      border: 1px solid var(--border-primary) !important;
+    }
+
+    &__summary-label {
+      color: var(--text-secondary) !important;
+    }
+
+    &__summary-amount,
+    &__summary-fee {
+      color: var(--text-primary) !important;
+    }
+
+    &__summary-total {
+      color: var(--text-primary) !important;
+    }
+  }
+
+  &__back-btn {
+    color: var(--text-primary) !important;
+
+    &::before {
+      border-color: var(--text-primary) !important;
+    }
+  }
+
+  &__sent {
+    &__description {
+      color: var(--text-secondary) !important;
+    }
+  }
+}
+
+/* Settings Page Theme Overrides */
+.settings {
+  color: var(--text-primary) !important;
+
+  &__nav {
+    border-right: 1px solid var(--border-primary) !important;
+
+    &__item {
+      color: var(--text-secondary) !important;
+
+      &:hover {
+        background-color: var(--bg-tertiary) !important;
+        color: var(--text-primary) !important;
+      }
+
+      &--selected {
+        color: #2480fd !important;
+      }
+    }
+  }
+
+  &__content {
+    &__section {
+      border-bottom: 1px solid var(--border-primary) !important;
+
+      &--disabled {
+        background-color: var(--bg-tertiary) !important;
+        color: var(--text-muted) !important;
+      }
+
+      &__info {
+        &__title {
+          color: var(--text-primary) !important;
+        }
+
+        &__description {
+          color: var(--text-muted) !important;
+        }
+      }
+    }
+  }
+
+  &__input-title {
+    color: var(--text-primary) !important;
+  }
+
+  &__input {
+    background-color: var(--bg-tertiary) !important;
+    border: 1px solid var(--border-primary) !important;
+    color: var(--text-primary) !important;
+
+    &:focus {
+      border-color: var(--input-border-focus) !important;
+    }
+  }
+
+  &__input-row {
+    .dropdown__current-item {
+      background-color: var(--bg-tertiary) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid var(--border-primary) !important;
+    }
+
+    .dropdown__option {
+      background-color: var(--bg-secondary) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid var(--border-primary) !important;
+
+      &:hover {
+        background-color: var(--bg-tertiary) !important;
+      }
+    }
+  }
+}
+
+/* Pagination Overrides */
+.transactions__page-control__page--active,
+.domain-manager__page-control__page--active {
+  color: var(--text-primary) !important;
+}

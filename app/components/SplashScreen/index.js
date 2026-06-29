@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Proptype from 'prop-types';
-import HnsLogo from '../../assets/images/hns-logo.png';
+import HnsLogoClean from '../../assets/images/hns-logo-clean.png';
 import Spinner from '../../assets/images/brick-loader.svg';
 import dbClient from "../../utils/dbClient";
 import Alert from "../Alert";
@@ -59,8 +59,9 @@ class SplashScreen extends Component {
 
     return (
       <div style={wrapperStyle}>
-        <div style={logoWrapperStyle}>
-          <div style={hnsLogoStyle} />
+        <div style={logoContainerStyle}>
+          <img src={HnsLogoClean} style={logoStyle} alt="Handshake Wallet Logo" />
+          <div style={titleStyle}>Handshake Wallet</div>
         </div>
         {
           error
@@ -111,7 +112,7 @@ class SplashScreen extends Component {
           <div>
             {
               // Technically the version is now 4.0.0 not 3.0.0
-              // but the atual text in the message is version
+              // but the actual text in the message is version
               // agnostic ("migration in progress...")
               // so we can probably just leave this as is.
               t('splashMigrate3001')
@@ -142,24 +143,31 @@ const wrapperStyle = {
   justifyContent: 'center',
   alignItems: 'center',
   height: '100vh',
+  backgroundColor: '#0a0a0c', // Dark background for premium look
+  fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
 };
 
-const logoWrapperStyle = {
+const logoContainerStyle = {
   display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'center',
-  alignItems: 'baseline',
-  margin: '3rem 0',
+  flexDirection: 'column',
+  alignItems: 'center',
+  marginBottom: '2.5rem',
 };
 
-const hnsLogoStyle = {
-  backgroundImage: `url(${HnsLogo})`,
-  height: '75px',
-  width: '75px',
-  backgroundSize: 'contain',
-  backgroundPosition: 'center',
-  backgroundRepeat: 'no-repeat',
-  animation: '0.5s ease-in-out',
+const logoStyle = {
+  height: '130px',
+  width: '130px',
+  marginBottom: '1.25rem',
+  filter: 'drop-shadow(0 0 20px rgba(99, 232, 177, 0.15))', // Cyan/blue glow
+};
+
+const titleStyle = {
+  fontSize: '2.25rem',
+  fontWeight: '700',
+  color: '#ffffff',
+  letterSpacing: '-0.025em',
+  textAlign: 'center',
+  margin: '0',
 };
 
 const spinnerStyle = {
@@ -170,12 +178,13 @@ const spinnerStyle = {
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   animation: '0.5s ease-in-out',
+  filter: 'invert(1) brightness(1.5)', // Invert spinner color for dark theme readability
 };
 
 const textStyles = {
-  fontSize: '1rem',
-  lineHeight: '1rem * 1.4',
-  color: '#3c3c3c',
+  fontSize: '0.95rem',
+  lineHeight: '1.5',
+  color: '#a0a0ab', // Light gray for dark theme readability
   textAlign: 'center',
   maxWidth: '400px',
 };

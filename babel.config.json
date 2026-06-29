@@ -6,7 +6,8 @@
         "targets": {
           "electron": "22.0.0"
         },
-        "debug": true
+        "useBuiltIns": false,
+        "debug": false
       }
     ],
     "@babel/preset-react"

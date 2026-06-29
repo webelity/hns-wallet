@@ -1,5 +1,6 @@
 import walletClient from '../utils/walletClient';
 import nodeClient from '../utils/nodeClient';
+import dbClient from '../utils/dbClient';
 import throttle from 'lodash.throttle';
 import { getMaxIdleMinutes, setMaxIdleMinutes } from '../db/system';
 import { getMultisigKeyName, setMultisigKeyName, delMultisigKeyName } from '../db/wallet';
@@ -245,7 +246,8 @@ export const waitForWalletSync = () => async (dispatch, getState) => {
 export const fetchTransactions = () => async (dispatch, getState) => {
   const state = getState();
   const net = state.wallet.network;
-  const currentTXs = state.wallet.transactions;
+  const wid = state.wallet.wid;
+  let currentTXs = state.wallet.transactions;
 
   if (state.wallet.isFetching) {
     return;
@@ -256,21 +258,43 @@ export const fetchTransactions = () => async (dispatch, getState) => {
     payload: true,
   });
 
+  // Attempt to load cached transactions
+  const cacheKey = `txs_${net}_${wid}`;
+  try {
+    const cachedArray = await dbClient.get(cacheKey);
+    if (cachedArray && cachedArray.length > 0) {
+      const cachedMap = new Map(cachedArray);
+      currentTXs = cachedMap;
+      dispatch({
+        type: SET_TRANSACTIONS,
+        payload: cachedMap,
+      });
+    }
+  } catch (err) {
+    // Ignore cache retrieval errors
+  }
 
-  const txs = await walletClient.getTransactionHistory();
+  let txs = [];
+  try {
+    txs = await walletClient.getTransactionHistory();
+  } catch (err) {
+    dispatch({
+      type: SET_FETCHING,
+      payload: false,
+    });
+    throw err;
+  }
 
   let payload = new Map();
 
   for (let i = 0; i < txs.length; i++) {
     const tx = txs[i];
-    const {time, block} = tx;
+    const { time, block } = tx;
+    const isPending = !block;
     const existing = currentTXs.get(tx.hash);
 
-    if (existing) {
-      const isPending = !block;
+    if (existing && existing.pending === isPending) {
       existing.date = isPending ? Date.now() : time * 1000;
-      existing.pending = isPending;
-
       payload.set(existing.id, existing);
       continue;
     }
@@ -283,7 +307,6 @@ export const fetchTransactions = () => async (dispatch, getState) => {
     }
 
     const ios = await parseInputsOutputs(net, tx);
-    const isPending = !block;
     const txData = {
       id: tx.hash,
       date: isPending ? Date.now() : time * 1000,
@@ -297,6 +320,13 @@ export const fetchTransactions = () => async (dispatch, getState) => {
 
   // Sort all TXs by date without losing the hash->tx mapping
   payload = new Map([...payload.entries()].sort((a, b) => b[1].date - a[1].date));
+
+  // Save updated transactions to the local database
+  try {
+    await dbClient.put(cacheKey, [...payload.entries()]);
+  } catch (err) {
+    // Ignore cache write errors
+  }
 
   dispatch({
     type: SET_FETCHING,

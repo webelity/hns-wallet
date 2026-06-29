@@ -24,6 +24,7 @@ import RenewalQueue from '../RenewalQueue';
 import * as nodeActions from "../../ducks/node";
 import * as walletActions from '../../ducks/walletActions';
 import './app.scss';
+import '../../theme.scss';
 import AccountLogin from '../AcountLogin';
 import PassphraseModal from '../AcountLogin/PassphraseModal';
 import * as node from '../../ducks/node';
@@ -75,8 +76,15 @@ class App extends Component {
 
   state = {
     isLoading: true,
+    theme: localStorage.getItem('theme') || 'dark',
     isListingWallets: true,
     custtomRPCNetworkType: '',
+  };
+
+  toggleTheme = () => {
+    const nextTheme = this.state.theme === 'light' ? 'dark' : 'light';
+    this.setState({ theme: nextTheme });
+    localStorage.setItem('theme', nextTheme);
   };
 
   async componentDidMount() {
@@ -99,7 +107,7 @@ class App extends Component {
       this.props.setExplorer(explorer)
     });
 
-    setTimeout(() => this.setState({isLoading: false}), 1000);
+    this.setState({isLoading: false});
   }
 
   async fetchCustomRPC() {
@@ -129,7 +137,7 @@ class App extends Component {
     }
 
     return (
-      <div className="app">
+      <div className={c("app", `theme-${this.state.theme}`)}>
         {/*<WalletSync />*/}
         <IdleModal />
         <PassphraseModal />
@@ -301,7 +309,7 @@ class App extends Component {
           </div>
         )}
         <div className="app__main-wrapper">
-          <Topbar title={title} showLogo={!showSidebar} />
+          <Topbar title={title} showLogo={!showSidebar} theme={this.state.theme} toggleTheme={this.toggleTheme} />
           {
             padded
               ? (

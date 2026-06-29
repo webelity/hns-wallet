@@ -1,3 +1,5 @@
+$font-sans: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
 // BW
 $white: #fff;
 $black: #000;
@@ -347,7 +349,7 @@ $monospace: 'Roboto Mono', monospace;
 //Extends
 
 %description_text {
-  font-family: 'Roboto', sans-serif;
+  font-family: $font-sans;
   font-size: 12px;
   line-height: 14px;
   width: 100%;
@@ -355,7 +357,7 @@ $monospace: 'Roboto Mono', monospace;
 }
 
 %subheader_text {
-  font-family: 'Roboto', sans-serif;
+  font-family: $font-sans;
   font-size: 14px;
   line-height: 16px;
   width: 100%;
@@ -363,7 +365,7 @@ $monospace: 'Roboto Mono', monospace;
 }
 
 %header_text {
-  font-family: 'Roboto', sans-serif;
+  font-family: $font-sans;
   font-weight: bold;
   color: black;
   font-size: 18px;
@@ -389,7 +391,7 @@ $monospace: 'Roboto Mono', monospace;
   background-color: $azure-blue;
   color: white;
   // font-family: 'SF-Pro-Display-Regular';
-  font-family: 'Roboto', sans-serif;
+  font-family: $font-sans;
   //font-size: 12px;
   font-weight: 600;
   line-height: 16px;
@@ -404,7 +406,7 @@ $monospace: 'Roboto Mono', monospace;
 }
 
 .extension_option_text {
-  font-family: 'Roboto', sans-serif;
+  font-family: $font-sans;
   font-size: 14px;
   line-height: 16px;
   width: 235px;
@@ -420,7 +422,7 @@ $monospace: 'Roboto Mono', monospace;
   height: 14px;
   opacity: 0.3;
   color: #000000;
-  font-family: 'Roboto', sans-serif;
+  font-family: $font-sans;
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1rem;

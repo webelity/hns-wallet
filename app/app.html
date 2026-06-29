@@ -3,15 +3,15 @@
 <head>
   <meta http-equiv="Content-Security-Policy" content="
   default-src 'self' 'sha256-ifNoD1V8CYOGqCEhgv6hm3CwX8yYueHGf454+Xv7rrI=' http://localhost:1212;
-  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-  font-src https://fonts.gstatic.com;
+  style-src 'self' 'unsafe-inline';
+  font-src 'self' file:;
   img-src * data:;
   connect-src ws://0.0.0.0:1212 http://localhost:1212 *.sentry.io *.mixpanel.com;
   ">
   <meta charset="utf-8" />
   <title>Handshake Wallet</title>
   <!-- Preloading Styles for Splash Screen -->
-  <style>html, body { margin: 0; padding: 0; font-family: system-ui, 'Roboto', sans-serif; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: hidden; }</style>
+  <style>html, body { margin: 0; padding: 0; font-family: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: hidden; }</style>
 </head>
 <body>
 <div id="root"></div>

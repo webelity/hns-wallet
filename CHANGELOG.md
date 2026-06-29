@@ -6,6 +6,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.1.7] - 2026-06-29
+### Added
+- Implemented a **Cache-Aside with Background Sync** model for the wallet's transaction history to achieve instant history loading on startup or wallet switch.
+- Added transaction caching in the local LevelDB database (`dbClient`) under the key `txs_${net}_${wid}`, rendering cached transactions in the UI immediately.
+- Added a background sync process that fetches the latest transaction history from the Handshake node via `walletClient.getTransactionHistory()` and silently updates the local cache and UI.
+- Added a global **Theme Management System** supporting both **Light** and **Dark** themes, with the user's preference saved in `localStorage`.
+- Added a modern theme toggle button (Sun/Moon vector icons) in the Topbar for quick one-click theme switching.
+- Added custom scrollbars optimized for the dark theme.
+- Added a modern, cross-OS friendly local font set saved in `app/assets/fonts/` to give the application a clean, updated typography feel.
+
+### Changed
+- Optimized the transaction parsing loop to only process new or status-changed transactions, reusing cached transaction data if the pending status matches, which avoids redundant and expensive covenant parsing calls.
+- Removed the artificial 1-second delay from the application initialization splash screen, allowing users to log in as soon as the node is ready.
+- Modernized the overall UI (cards, inputs, tables, dropdowns, and modals) with smooth transitions, clean borders, and dark-theme optimized.
+- Replaced Google Fonts / system font fallbacks with the locally bundled font family.
+
+### Removed
+- Removed "Claim Airdrop or Name" Section from the sidebar menu.
+
+### Fixed
+- Fixed Babel build warnings (`useBuiltIns` option not set) and cleaned up verbose build output by configuring `"useBuiltIns": false` and disabling `"debug"` in `babel.config.json`.
+- Fixed local font loading Content Security Policy (CSP) violations by updating the policy in `app.html` to permit `'self'` and `file:`, and completely removed external Google Fonts imports.
+- Fixed dropdown menu styling issues (unreadable white text on light-gray background when open) by adding high-specificity selectors for light and dark themes.
+- Fixed text contrast issues in the dark theme for inactive sidebar links, category headers, and footer block status text.
+- Fixed text contrast inside action cards (red, yellow, and green status cards) by explicitly setting high-contrast text colors in both themes.
+- Fixed transaction list text contrast (date, description, party address, and neutral amounts) and search bar styling in the dark theme.
+
 ## [2.1.6] - 2026-06-28
 ### Added
 - Added an additional pagination control at the top of the Domain Manager (below the action buttons and above the search input) by rendering `this.renderControls(namesList)` to improve navigation for users with many domains.

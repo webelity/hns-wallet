@@ -51,6 +51,8 @@ class Topbar extends Component {
     getNameInfo: PropTypes.func.isRequired,
     lockWallet: PropTypes.func.isRequired,
     spendableBalance: PropTypes.number,
+    theme: PropTypes.string,
+    toggleTheme: PropTypes.func,
   };
 
   static contextType = I18nContext;
@@ -118,8 +120,52 @@ class Topbar extends Component {
           <TLDInput minimalErrorDisplay />
         }
         <SyncStatus />
-        { this.renderSettingIcon() }
+        {this.renderThemeToggle()}
+        {this.renderSettingIcon()}
       </React.Fragment>
+    );
+  }
+
+  renderThemeToggle() {
+    const { theme, toggleTheme } = this.props;
+    const isDark = theme === 'dark';
+    return (
+      <div
+        className="topbar__icon topbar__icon--theme-toggle"
+        onClick={toggleTheme}
+        title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '2.25rem',
+          height: '2.25rem',
+          borderRadius: '50%',
+          cursor: 'pointer',
+          marginRight: '0.5rem',
+          transition: 'background-color 0.2s ease',
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-tertiary)'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+      >
+        {isDark ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffe000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.22" x2="5.64" y2="17.78"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        ) : (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2480fd" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        )}
+      </div>
     );
   }
 

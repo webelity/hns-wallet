@@ -2,7 +2,7 @@
   "name": "hns-wallet",
   "productName": "Handshake Wallet",
   "author": "Christopher Istvan",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "description": "A Handshake wallet and auction manager.",
   "scripts": {
     "build": "node ./scripts/package.js",
