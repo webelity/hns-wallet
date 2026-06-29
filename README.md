@@ -9,7 +9,9 @@
 ---
 
 ## Key Features
-
+- **Instant-Loading Transaction History**: High-performance cache-aside architecture using local LevelDB caching paired with background synchronization for instant transaction history loading.
+- **Modern Light and Dark Themes**: Fully responsive, gorgeous user interface supporting both Light and Dark modes with a quick toggle in the Topbar, custom scrollbars, and glassmorphism.
+- **Sovereign Typography**: Embedded, offline-first font family to ensure a premium, modern visual feel while maintaining strict local Content Security Policies.
 - **Decentralized Domain Auctions**: Participate in Handshake TLD auctions directly from the UI. Open auctions, place bids, reveal them, and claim your decentralized digital real estate seamlessly.
 - **High-Performance Bulk Renewals**: Save time and optimize network fees with multi-select bulk domain renewals (supporting up to 600 names per block) and bulk transfers.
 - **Smart Fee Estimation & Speed Selector**: Predict and optimize your transaction costs using the built-in fee estimator and speed selector (Slow, Medium, Fast) tailored for non-urgent renewals.
@@ -56,9 +58,6 @@ certUtil -hashfile hns-wallet-2.1.6.msi SHA256
 shasum -a 256 hns-wallet-2.1.6-x86.dmg
 shasum -a 256 hns-wallet-2.1.6-arm64.dmg
 ```
-
-For more details and advanced PGP signature verification, see [PR #612](https://github.com/webelity/hns-wallet/pull/612).
-
 ---
 
 ## Uninstall
