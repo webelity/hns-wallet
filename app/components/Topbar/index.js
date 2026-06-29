@@ -178,16 +178,17 @@ class Topbar extends Component {
     const walletName = walletsDetails[walletId]?.displayName || walletId;
 
     return (
-      <div
-        className={c('topbar__icon', 'topbar__icon--settings', {
-          'topbar__icon--settings--opened': this.state.isShowingSettingMenu,
-        })}
-        onClick={() => this.setState({ isShowingSettingMenu: !isShowingSettingMenu })}
-      >
+      <div className="topbar__settings-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
+        <div
+          className={c('topbar__icon', 'topbar__icon--settings', {
+            'topbar__icon--settings--opened': this.state.isShowingSettingMenu,
+          })}
+          onClick={() => this.setState({ isShowingSettingMenu: !isShowingSettingMenu })}
+        />
         {
           isShowingSettingMenu
             ? (
-              <div className="setting-menu">
+              <div className="setting-menu" onClick={e => e.stopPropagation()}>
                 <div className="setting-menu__balance-container">
                   {this.renderSettingGroup(t('walletID'), walletName)}
                   {this.renderSettingGroup(t('balanceSpendable'), `${displayBalance(spendableBalance)} HNS`)}

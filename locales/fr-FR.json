@@ -71,7 +71,7 @@
   "renewalFreeNote": "Les renouvellements Handshake n'ont pas de frais d'enregistrement annuels.",
   "feeSpeed": "Vitesse",
   "slow": "Lent",
-  "medium": "Moyen",
+  "standard": "Standard",
   "fast": "Rapide",
   "cancel": "Annuler",
   "cancelSuccess": "Votre demande d'annulation est soumise ! Veuillez attendre environ 15 minutes pour qu'elle soit confirmée.",

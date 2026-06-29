@@ -71,7 +71,7 @@
   "renewalFreeNote": "Las renovaciones de Handshake no tienen tarifas de registro anuales.",
   "feeSpeed": "Velocidad",
   "slow": "Lento",
-  "medium": "Medio",
+  "standard": "Estándar",
   "fast": "Rápido",
   "cancel": "Cancelar",
   "cancelSuccess": "¡Se ha enviado tu solicitud de cancelación! Por favor, espera unos 15 minutos para que se confirme.",

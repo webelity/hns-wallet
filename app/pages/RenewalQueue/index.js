@@ -270,7 +270,9 @@ export default class RenewalQueue extends Component {
               })
             ) : (
               <TableRow className="table__empty-row">
-                {t('domainManagerEmpty')}
+                <TableItem colSpan="4" style={{ paddingLeft: '1.5rem' }}>
+                  {t('domainManagerEmpty')}
+                </TableItem>
               </TableRow>
             )}
           </Table>

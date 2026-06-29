@@ -71,7 +71,7 @@
   "renewalFreeNote": "Handshake renewals have no annual registry fees.",
   "feeSpeed": "Speed",
   "slow": "Slow",
-  "medium": "Medium",
+  "standard": "Standard",
   "fast": "Fast",
   "cancel": "Cancel",
   "cancelSuccess": "Your cancellation request is submitted! Please wait around 15 minutes for it to be confirmed.",

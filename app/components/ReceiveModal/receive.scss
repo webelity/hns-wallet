@@ -4,7 +4,7 @@
   &__container {
     @extend %col-nowrap;
     max-width: 30rem;
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border-primary);
     border-radius: 0.6rem;
     padding: 2rem;
     margin: 0 auto;
@@ -20,6 +20,7 @@
     font-size: 1.1rem;
     margin-bottom: 0.75rem;
     letter-spacing: -1px;
+    color: var(--text-primary);
   }
 
   &__warning-title {
@@ -27,6 +28,7 @@
     font-weight: 600;
     font-size: 1rem;
     padding-top: 1rem;
+    color: var(--text-primary);
   }
 
   &__warning-icon {
@@ -37,12 +39,16 @@
     width: 4rem;
     margin: 1.5rem 0 2rem 0;
     opacity: 0.9;
+
+    .theme-dark & {
+      filter: invert(1) brightness(1.5);
+    }
   }
 
   &__warning-subtitle {
     @extend %h4;
     font-weight: 400;
-    color: rgba($black, 0.8);
+    color: var(--text-secondary);
     padding: 1rem 0;
     text-align: center;
   }
@@ -66,11 +72,14 @@
     margin-bottom: 1rem;
     align-items: center;
     justify-content: center;
+    background-color: $white;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
   }
 
   &__address-display {
     @extend %row-nowrap;
-    border: solid 1.25px rgba($black, 0.1);
+    border: solid 1.25px var(--border-primary);
     margin: 0rem 0 1.5rem 0;
     border-radius: 8px;
     align-items: center;
@@ -84,6 +93,7 @@
     font-family: 'Roboto Mono', monospace;
     font-weight: 500;
     margin: 5px;
+    color: var(--text-primary);
   }
 
   &__disclaimer {
@@ -91,7 +101,7 @@
     max-width: 20rem;
     line-height: 1.5rem;
     text-align: center;
-    color: $manatee-gray;
+    color: var(--text-muted);
   }
 
   &__copy-btn {

@@ -63,7 +63,7 @@
   "renewalFreeNote": "Handshake 域名更新没有年度注册费用。",
   "feeSpeed": "速度",
   "slow": "慢",
-  "medium": "中",
+  "standard": "标准",
   "fast": "快",
   "cancel": "Cancel",
   "cancelSuccess": "Your cancellation request is submitted! Please wait around 15 minutes for it to be confirmed.",

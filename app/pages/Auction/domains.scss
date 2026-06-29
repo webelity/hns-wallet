@@ -369,7 +369,7 @@
             display: block;
             width: 15px;
             height: 13px;
-            background-image: url('../../assets/images/icon-128.png');
+            background-image: url('../../assets/images/hns-logo-clean.png');
             background-size: contain;
             background-repeat: no-repeat;
           }
@@ -497,14 +497,27 @@
       background-size: cover;
       transition: 0.2s ease-in-out;
 
+      .theme-dark & {
+        filter: invert(1) brightness(1.2);
+      }
+
       &:hover {
         cursor: pointer;
         opacity: 0.8;
         background-image: url("../../assets/images/heart-red-outline.svg");
+
+        .theme-dark & {
+          filter: none;
+        }
       }
 
       &--active {
         background-image: url("../../assets/images/heart-red.svg");
+
+        .theme-dark & {
+          filter: none;
+        }
+
         &:hover {
           opacity: 0.8;
           background-image: url("../../assets/images/heart-red.svg");

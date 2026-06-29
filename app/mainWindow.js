@@ -15,6 +15,7 @@ export default function showMainWindow() {
     show: false,
     width: 1024,
     height: 728,
+    icon: path.join(__dirname, 'assets', 'images', 'hns-logo-clean.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,

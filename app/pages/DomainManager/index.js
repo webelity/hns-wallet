@@ -78,16 +78,23 @@ class DomainManager extends Component {
       || this.state.sortDirection !== nextState.sortDirection;
   }
 
+  setPageIndex = (index) => {
+    dbClient.put('domain-manager-current-page-index', index);
+    this.setState({ currentPageIndex: index });
+  };
+
   async componentDidMount() {
     this.props.getMyNames();
     const itemsPerPage = await dbClient.get(DM_ITEMS_PER_PAGE_KEY);
     const sortKey = await dbClient.get(DM_SORT_KEY);
     const sortDirection = await dbClient.get(DM_SORT_DIRECTION);
+    const currentPageIndex = await dbClient.get('domain-manager-current-page-index');
 
     this.setState({
       itemsPerPage: itemsPerPage || 10,
       sortKey: sortKey || 'domain',
       sortDirection: sortDirection || 'asc',
+      currentPageIndex: currentPageIndex || 0,
     });
 
     analytics.screenView('Domain Manager');
@@ -132,6 +139,7 @@ class DomainManager extends Component {
       const nextDirection = prevState.sortKey === key && prevState.sortDirection === 'asc' ? 'desc' : 'asc';
       dbClient.put(DM_SORT_KEY, key);
       dbClient.put(DM_SORT_DIRECTION, nextDirection);
+      dbClient.put('domain-manager-current-page-index', 0);
       return {
         sortKey: key,
         sortDirection: nextDirection,
@@ -231,8 +239,8 @@ class DomainManager extends Component {
     }
   };
 
-  renderGoTo(namesList) {
-    const {currentPageIndex, itemsPerPage} = this.state;
+  renderGoTo(namesList, currentPageIndex) {
+    const {itemsPerPage} = this.state;
     const { t } = this.context;
 
     const totalPages = Math.ceil(namesList.length / itemsPerPage);
@@ -245,6 +253,7 @@ class DomainManager extends Component {
             items={ITEM_PER_DROPDOWN}
             onChange={async itemsPerPage => {
               await dbClient.put(DM_ITEMS_PER_PAGE_KEY, itemsPerPage);
+              await dbClient.put('domain-manager-current-page-index', 0);
               this.setState({
                 itemsPerPage,
                 currentPageIndex: 0,
@@ -258,7 +267,7 @@ class DomainManager extends Component {
           <Dropdown
             className="domain-manager__go-to__dropdown"
             items={Array(totalPages).fill(0).map((_, i) => ({label: `${i + 1}`}))}
-            onChange={currentPageIndex => this.setState({currentPageIndex})}
+            onChange={pageIndex => this.setPageIndex(pageIndex)}
             currentIndex={currentPageIndex}
           />
           <div className="domain-manager__go-to__total">of {totalPages}</div>
@@ -267,9 +276,8 @@ class DomainManager extends Component {
     );
   }
 
-  renderControls(namesList) {
+  renderControls(namesList, currentPageIndex) {
     const {
-      currentPageIndex,
       itemsPerPage,
     } = this.state;
 
@@ -281,9 +289,7 @@ class DomainManager extends Component {
         <div className="domain-manager__page-control__numbers">
           <div
             className="domain-manager__page-control__start"
-            onClick={() => this.setState({
-              currentPageIndex: Math.max(currentPageIndex - 1, 0),
-            })}
+            onClick={() => this.setPageIndex(Math.max(currentPageIndex - 1, 0))}
           />
           {pageIndices.map((pageIndex, i) => {
             if (pageIndex === '...') {
@@ -298,7 +304,7 @@ class DomainManager extends Component {
                 className={c('domain-manager__page-control__page', {
                   'domain-manager__page-control__page--active': currentPageIndex === pageIndex,
                 })}
-                onClick={() => this.setState({currentPageIndex: pageIndex})}
+                onClick={() => this.setPageIndex(pageIndex)}
               >
                 {pageIndex + 1}
               </div>
@@ -306,12 +312,10 @@ class DomainManager extends Component {
           })}
           <div
             className="domain-manager__page-control__end"
-            onClick={() => this.setState({
-              currentPageIndex: Math.min(currentPageIndex + 1, totalPages - 1),
-            })}
+            onClick={() => this.setPageIndex(Math.min(currentPageIndex + 1, totalPages - 1))}
           />
         </div>
-        {this.renderGoTo(namesList)}
+        {this.renderGoTo(namesList, currentPageIndex)}
       </div>
     );
   }
@@ -339,17 +343,16 @@ class DomainManager extends Component {
     )
   }
 
-  renderList(namesList) {
+  renderList(namesList, currentPageIndex) {
     const {history} = this.props;
     const {t} = this.context;
     const {
       query,
-      currentPageIndex: i,
       itemsPerPage: n,
       selectedNames,
     } = this.state;
 
-    const start = i * n;
+    const start = currentPageIndex * n;
     const end = start + n;
     const currentPageNames = namesList.slice(start, end);
     const isAllSelected = currentPageNames.length > 0 && currentPageNames.every(name => selectedNames.includes(name));
@@ -393,7 +396,7 @@ class DomainManager extends Component {
             </button>
           )}
         </div>
-        {this.renderControls(namesList)}
+        {this.renderControls(namesList, currentPageIndex)}
         <BidSearchInput
           className="domain-manager__search"
           placeholder={t('domainSearchPlaceholder')}
@@ -418,20 +421,15 @@ class DomainManager extends Component {
               {t('hnsPaid')} {this.state.sortKey === 'paid' && (this.state.sortDirection === 'asc' ? '▲' : '▼')}
             </HeaderItem>
           </HeaderRow>
-          {namesList.length ? currentPageNames.map((name) => {
-            return (
-              <DomainRow
-                key={`${name}`}
-                name={name}
-                selected={selectedNames.includes(name)}
-                onSelect={() => this.handleSelectName(name)}
-                onClick={() => history.push(`/domain_manager/${name}`)}
-              />
-            );
-          }) :
-          <TableRow className="table__empty-row">
-            {this.context.t('domainManagerEmpty')}
-          </TableRow>}
+          {currentPageNames.map(name => (
+            <DomainRow
+              key={name}
+              selected={selectedNames.includes(name)}
+              onSelect={() => this.handleSelectName(name)}
+              name={name}
+              onClick={() => history.push(`/domain_manager/${name}`)}
+            />
+          ))}
         </Table>
       </div>
     );
@@ -458,7 +456,7 @@ class DomainManager extends Component {
     );
   }
 
-  renderBody(namesList) {
+  renderBody(namesList, currentPageIndex) {
     const {isFetching} = this.props;
     const { t } = this.context;
 
@@ -472,7 +470,7 @@ class DomainManager extends Component {
       );
     }
 
-    return this.renderList(namesList);
+    return this.renderList(namesList, currentPageIndex);
   }
 
   renderConfirmFinalizeModal() {
@@ -488,11 +486,14 @@ class DomainManager extends Component {
 
   render() {
     const namesList = this.getNamesList();
+    const { itemsPerPage, currentPageIndex } = this.state;
+    const totalPages = Math.ceil(namesList.length / itemsPerPage);
+    const clampedPageIndex = totalPages > 0 ? Math.max(0, Math.min(currentPageIndex, totalPages - 1)) : 0;
 
     return (
       <>
-        {this.renderBody(namesList)}
-        {this.renderControls(namesList)}
+        {this.renderBody(namesList, clampedPageIndex)}
+        {this.renderControls(namesList, clampedPageIndex)}
         {this.renderConfirmFinalizeModal()}
         {this.state.isShowingBulkTransfer && (
           <BulkTransfer

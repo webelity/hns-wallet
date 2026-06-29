@@ -21,6 +21,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed the artificial 1-second delay from the application initialization splash screen, allowing users to log in as soon as the node is ready.
 - Modernized the overall UI (cards, inputs, tables, dropdowns, and modals) with smooth transitions, clean borders, and dark-theme optimized.
 - Replaced Google Fonts / system font fallbacks with the locally bundled font family.
+- Optimized the pagination index generator to use a fixed-width window of 7 elements when total pages >= 7, preventing horizontal layout shifting of navigation arrows when clicking next/prev.
+- Updated the supported block explorers list ([explorers.js](app/constants/explorers.js)) to include **HNS Fans** and **Shake Shift**, removing inactive or outdated explorers (HNS Network, Niami, HNScan, Shake Scan, and Block Explorer).
+- Updated all app logo, icon, and input references to use the new high-resolution neon logo ([hns-logo-clean.png](app/assets/images/hns-logo-clean.png)).
+- Modernized the dropdown menu styling to support both light and dark themes, ensuring high-contrast readability of options.
+- Enhanced text contrast across the dark theme, specifically for inactive sidebar links, category headers, transaction lists, search bars, and footer status text.
+- Updated status action cards (red, yellow, and green cards) with high-contrast text colors tailored for both themes.
+- Themed the Receive section for full dark-theme compatibility, including adding a solid white background to the QR code container for scanability, updating warning icons/titles, and styling the address display border.
+- Improved the "Add to Watchlist" button on the domain details page by making the entire container (including the text label and icon) clickable and adding a white heart outline for better visibility in the dark theme.
+- Themed the Send Funds section, adding proper outlines, borders, backgrounds, and high-contrast text for all inputs, labels, select boxes, and confirmation screens in the dark theme.
+- Corrected the Renewal Queue empty state layout by wrapping the "No domains found" text in a proper table cell with spacing, preventing alignment issues.
+- Fixed active filter tab text color in the Your Bids page to be white in the dark theme so it is readable.
+- Aligned the DNS Update Speed default fees state key from 'medium' to 'standard' to match what is programmatically in the app, while keeping the estimated DNS update transaction size at 0.5 KB and displaying 'Normal' (0.010000 HNS/KB, approx. 0.00500 HNS per update) as requested, and updated the locale files to replace 'medium' with 'standard'.
+- Updated the Topbar to feature the new high-resolution Neon HNS Logo across all views and updated the global default theme to Dark.
+
 
 ### Removed
 - Removed "Claim Airdrop or Name" Section from the sidebar menu.
@@ -28,10 +42,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed Babel build warnings (`useBuiltIns` option not set) and cleaned up verbose build output by configuring `"useBuiltIns": false` and disabling `"debug"` in `babel.config.json`.
 - Fixed local font loading Content Security Policy (CSP) violations by updating the policy in `app.html` to permit `'self'` and `file:`, and completely removed external Google Fonts imports.
-- Fixed dropdown menu styling issues (unreadable white text on light-gray background when open) by adding high-specificity selectors for light and dark themes.
-- Fixed text contrast issues in the dark theme for inactive sidebar links, category headers, and footer block status text.
-- Fixed text contrast inside action cards (red, yellow, and green status cards) by explicitly setting high-contrast text colors in both themes.
-- Fixed transaction list text contrast (date, description, party address, and neutral amounts) and search bar styling in the dark theme.
+- Fixed a bug where the Domain Manager details page would fail to load for domains with older or unindexed bids/reveals by wrapping transaction lookups in try-catch blocks.
+- Fixed Domain Manager navigation by persisting the current page index in the local database, allowing the back button to restore the user's last viewed pagination page.
+- Fixed a regression in Domain Manager row click navigation where users were redirected to the login screen instead of the domain details page.
 
 ## [2.1.6] - 2026-06-28
 ### Added

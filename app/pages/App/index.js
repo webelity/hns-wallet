@@ -120,10 +120,10 @@ class App extends Component {
   async fetchExplorer() {
     const explorer = await settingClient.getExplorer();
     return explorer || {
-      label: 'HNS Network',
-      tx: 'https://hnsnetwork.com/txs/%s',
-      name: 'https://hnsnetwork.com/names/%s',
-      address: 'https://hnsnetwork.com/address/%s',
+      label: 'HNS Fans',
+      tx: 'https://e.hnsfans.com/tx/%s',
+      name: 'https://e.hnsfans.com/name/%s',
+      address: 'https://e.hnsfans.com/address/%s',
     }
   }
 

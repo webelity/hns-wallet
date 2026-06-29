@@ -39,7 +39,7 @@ export function getInitialState() {
     dnsFeeSpeed: 'standard',
     fees: {
       slow: 0,
-      medium: 0,
+      standard: 0,
       fast: 0
     },
     chain: {

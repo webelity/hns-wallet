@@ -112,31 +112,35 @@ export const getNameInfo = name => async (dispatch) => {
   }
 
   if (info.state === NAME_STATES.CLOSED) {
-    const res = await walletClient.getTX(info.owner.hash);
-    if (res) {
-      const {tx: buyTx} = res;
-      const buyOutput = buyTx.outputs[info.owner.index];
-      const coin = await walletClient.getCoin(info.owner.hash, info.owner.index);
-      isOwner = !!coin;
+    try {
+      const res = await walletClient.getTX(info.owner.hash);
+      if (res) {
+        const {tx: buyTx} = res;
+        const buyOutput = buyTx.outputs[info.owner.index];
+        const coin = await walletClient.getCoin(info.owner.hash, info.owner.index);
+        isOwner = !!coin;
 
-      if (coin) {
-        lastTx = {
-          height: coin.height,
-          covenant: coin.covenant,
+        if (coin) {
+          lastTx = {
+            height: coin.height,
+            covenant: coin.covenant,
+          }
+
+          if (coin.covenant.action === 'TRANSFER') {
+            const {network} = await nodeClient.getInfo();
+            info.transferTo = Address.fromHash(
+              Buffer.from(coin.covenant.items[3], 'hex'),
+              Number(coin.covenant.items[2])
+            ).toString(network);
+          }
         }
 
-        if (coin.covenant.action === 'TRANSFER') {
-          const {network} = await nodeClient.getInfo();
-          info.transferTo = Address.fromHash(
-            Buffer.from(coin.covenant.items[3], 'hex'),
-            Number(coin.covenant.items[2])
-          ).toString(network);
-        }
+        winner = {
+          address: buyOutput.address,
+        };
       }
-
-      winner = {
-        address: buyOutput.address,
-      };
+    } catch (e) {
+      console.warn(`Failed to get owner transaction ${info.owner.hash}:`, e);
     }
   }
 
@@ -153,24 +157,28 @@ async function inflateBids(bids, nameHeight) {
 
   const ret = [];
   for (const bid of bids) {
-    // Must use node client to get non-own bids
-    const res = await nodeClient.getTx(bid.prevout.hash);
+    try {
+      // Must use node client to get non-own bids
+      const res = await nodeClient.getTx(bid.prevout.hash);
 
-    if (!res) continue;
+      if (!res) continue;
 
-    // Ignore bids from previous auctions
-    if (res.height < nameHeight) continue;
+      // Ignore bids from previous auctions
+      if (res.height < nameHeight) continue;
 
-    const tx = res;
-    const out = tx.outputs[bid.prevout.index];
+      const tx = res;
+      const out = tx.outputs[bid.prevout.index];
 
-    ret.push({
-      bid,
-      from: out.address,
-      date: tx.mtime * 1000,
-      value: out.value,
-      height: tx.height,
-    });
+      ret.push({
+        bid,
+        from: out.address,
+        date: tx.mtime * 1000,
+        value: out.value,
+        height: tx.height,
+      });
+    } catch (e) {
+      console.warn(`Failed to inflate bid ${bid.prevout.hash}:`, e);
+    }
   }
 
   return ret;
@@ -183,26 +191,30 @@ async function inflateReveals(reveals, nameHeight) {
 
   const ret = [];
   for (const reveal of reveals) {
-    // Must use node client to get non-own reveals
-    const res = await nodeClient.getTx(reveal.prevout.hash);
+    try {
+      // Must use node client to get non-own reveals
+      const res = await nodeClient.getTx(reveal.prevout.hash);
 
-    if (!res) continue;
+      if (!res) continue;
 
-    // Ignore reveals from previous auctions
-    if (res.height < nameHeight) continue;
+      // Ignore reveals from previous auctions
+      if (res.height < nameHeight) continue;
 
-    const tx = res;
-    const out = tx.outputs[reveal.prevout.index];
-    const coin = await walletClient.getCoin(reveal.prevout.hash, reveal.prevout.index);
+      const tx = res;
+      const out = tx.outputs[reveal.prevout.index];
+      const coin = await walletClient.getCoin(reveal.prevout.hash, reveal.prevout.index);
 
-    ret.push({
-      bid: reveal, // yes, it really is reveal
-      from: out.address,
-      date: tx.mtime * 1000,
-      value: out.value,
-      height: tx.height,
-      redeemable: !!coin,
-    });
+      ret.push({
+        bid: reveal, // yes, it really is reveal
+        from: out.address,
+        date: tx.mtime * 1000,
+        value: out.value,
+        height: tx.height,
+        redeemable: !!coin,
+      });
+    } catch (e) {
+      console.warn(`Failed to inflate reveal ${reveal.prevout.hash}:`, e);
+    }
   }
 
   return ret;

@@ -52,24 +52,28 @@ class BidActionPanel extends Component {
     return (
       <React.Fragment>
         {this.renderActionPanel()}
-        <div className="domains__watch">
+        <div
+          className="domains__watch"
+          onClick={() => {
+            if (isWatching) {
+              this.props.unwatchDomain(name, network);
+              analytics.track('unwatched domain', {
+                source: 'Bid Action Panel',
+              });
+            } else {
+              this.props.watchDomain(name, network);
+              analytics.track('watched domain', {
+                source: 'Bid Action Panel',
+              });
+            }
+          }}
+          style={{ cursor: 'pointer' }}
+        >
           <div
             className={c('domains__watch__heart-icon', {
               'domains__watch__heart-icon--active': isWatching,
             })}
-            onClick={() => {
-              if (isWatching) {
-                this.props.unwatchDomain(name, network);
-                analytics.track('unwatched domain', {
-                  source: 'Bid Action Panel',
-                });
-              } else {
-                this.props.watchDomain(name, network);
-                analytics.track('watched domain', {
-                  source: 'Bid Action Panel',
-                });
-              }
-            }} />
+          />
           <div className="domains__watch__text">
             {isWatching ? t('addedWatchlist') : t('addWatchlist')}
           </div>

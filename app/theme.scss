@@ -768,6 +768,7 @@ button, .btn {
       &__info {
         &__title {
           color: var(--text-primary) !important;
+          font-weight: 600 !important;
         }
 
         &__description {
@@ -814,4 +815,22 @@ button, .btn {
 .transactions__page-control__page--active,
 .domain-manager__page-control__page--active {
   color: var(--text-primary) !important;
+}
+
+/* Content Area Component Overrides */
+.content-area {
+  background: var(--bg-secondary) !important;
+
+  .theme-dark & {
+    background: #16171c !important;
+  }
+
+  &__title {
+    color: var(--text-primary) !important;
+  }
+}
+
+/* Settings Dropdown Widths */
+.dns-fee-speed-dropdown {
+  min-width: 10rem !important;
 }

@@ -407,3 +407,103 @@
     transform: rotate(360deg);
   }
 }
+
+/* Dark Theme Overrides */
+.theme-dark {
+  .send {
+    &__container {
+      background-color: var(--bg-secondary) !important;
+      border: 1px solid var(--border-primary) !important;
+    }
+
+    &__title {
+      color: var(--text-primary) !important;
+    }
+
+    &__label {
+      color: var(--text-muted) !important;
+    }
+
+    &__input,
+    &__amount-input,
+    &__network-fee__select,
+    &__network-fee__fee-amount {
+      background-color: var(--bg-tertiary) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid var(--border-primary) !important;
+
+      input {
+        color: var(--text-primary) !important;
+        background-color: transparent !important;
+        
+        &::placeholder {
+          color: var(--text-muted) !important;
+        }
+      }
+    }
+
+    &__amount-input__unit {
+      color: var(--text-primary) !important;
+    }
+
+    &__network-fee__select {
+      &::after {
+        border-color: var(--text-muted) !important;
+      }
+    }
+
+    &__network-fee__fee-amount {
+      color: var(--text-muted) !important;
+    }
+
+    &__input-disclaimer {
+      color: var(--text-muted) !important;
+    }
+
+    &__back-btn {
+      color: var(--text-primary) !important;
+
+      &::before {
+        border-color: var(--text-primary) !important;
+      }
+    }
+
+    &__close-btn {
+      color: var(--text-primary) !important;
+    }
+
+    &__confirm {
+      &__label {
+        color: var(--text-muted) !important;
+      }
+
+      &__address {
+        color: var(--text-primary) !important;
+      }
+
+      &__time-text {
+        color: var(--text-primary) !important;
+      }
+
+      &__summary {
+        background-color: rgba(36, 128, 253, 0.15) !important;
+        border: 1px solid var(--border-primary) !important;
+      }
+
+      &__summary-amount,
+      &__summary-fee {
+        color: var(--text-secondary) !important;
+      }
+
+      &__summary-total {
+        color: var(--text-primary) !important;
+      }
+    }
+
+    &__sent {
+      &__description {
+        color: var(--text-muted) !important;
+      }
+    }
+  }
+}
